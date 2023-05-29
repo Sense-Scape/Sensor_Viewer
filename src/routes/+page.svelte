@@ -1,17 +1,49 @@
 <!-- <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p> -->
 <div class="container">
-	<div class="time"><p>time</p></div>
-	<div class="freq"><p>freq</p></div>
-	<div class="rate"><p>rate</p></div>
-	<div class="samples"><p>samples</p></div>
-	<div class="resolution"><p>resolution</p></div>
+	<div class="time block">
+		<div class="card">
+			<p>time</p>
+		</div>
+	</div>
+	<div class="freq block">
+		<div class="card">
+			<p>freq</p>
+		</div>
+	</div>
+	<div class="rate block">
+		<div class="card">
+			<p>rate</p>
+		</div>
+	</div>
+	<div class="samples block">
+		<div class="card">
+			<p>samples</p>
+		</div>
+	</div>
+	<div class="resolution block">
+		<div class="card">
+			<p>resolution</p>
+		</div>
+	</div>
 </div>
 
 <style>
-
 	p {
 		height: 100%;
+		margin: 0;
+	}
+
+	.card {
+		border-radius: 0.2rem;
+		text-shadow: 4rem;
+		background-color: #d9d9d9;
+		height: 100%;
+		width: 100%;
+	}
+
+	.block {
+		padding: 0.8rem;
 	}
 
 	.container {
@@ -28,26 +60,21 @@
 
 	.time {
 		grid-area: time;
-		background-color: chocolate;
 	}
 
 	.freq {
 		grid-area: freq;
-		background-color: aquamarine;
 	}
 
 	.rate {
 		grid-area: rate;
-		background-color: burlywood;
 	}
 
 	.samples {
 		grid-area: samples;
-		background-color: gray;
 	}
 
 	.resolution {
 		grid-area: resolution;
-		background-color: cadetblue;
 	}
 </style>
