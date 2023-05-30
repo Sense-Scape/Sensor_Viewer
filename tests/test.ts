@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test('card with rate is visible', async ({ page }) => {
 	await page.goto('/');
-	await expect(page.getByText('rate')).toBeVisible();
+	await expect(page.getByText('rate', {exact: true})).toBeVisible();
 });
 
 test('card with samples is visible', async ({ page }) => {
