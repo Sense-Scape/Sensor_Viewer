@@ -1,5 +1,20 @@
-<!-- <h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p> -->
+<script lang="ts">
+	import { onDestroy } from 'svelte';
+	import AudioStream from '../AudioStream.svelte';
+	import { sampleRateStore } from '../stores';
+
+	let sampleRate: number | null = null;
+
+	const unsubscribe = sampleRateStore.subscribe((value) => {
+		sampleRate = value;
+	});
+
+	// Unsubscribe when the component is destroyed
+	onDestroy(() => {
+		unsubscribe();
+	});
+</script>
+
 <div class="container">
 	<div class="time block">
 		<div class="card">
@@ -13,12 +28,17 @@
 	</div>
 	<div class="rate block">
 		<div class="card">
-			<p>rate</p>
+			<div>
+				<p>rate</p>
+				<p>Rate: {sampleRate}</p>
+			</div>
 		</div>
 	</div>
 	<div class="samples block">
 		<div class="card">
 			<p>samples</p>
+			<AudioStream />
+			<p>don't press play, it's loud dummy data</p>
 		</div>
 	</div>
 	<div class="resolution block">

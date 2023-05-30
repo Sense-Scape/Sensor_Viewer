@@ -25,7 +25,15 @@ test('card with freq is visible', async ({ page }) => {
 	await expect(page.getByText('freq')).toBeVisible();
 });
 
-test('/about ', async ({ page }) => {
+test('playing stream updates the sample rate', async ({ page }) => {
+	await page.goto('/');
+	await expect(page.getByText('Rate: null')).toBeVisible();
+	await page.getByRole("button", {name: "Start Stream"}).click();
+	await expect(page.getByText('Rate: 48000')).toBeVisible();
+	await expect(page.getByText('freq')).toBeVisible();
+});
+
+test('about shows simple about heading', async ({ page }) => {
 	await page.goto('/about');
 	await expect(page.getByRole('heading', { name: "About SvelteKit" })).toBeVisible();
 });
