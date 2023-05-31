@@ -1,3 +1,7 @@
+<svelte:head>
+    <title>Sense-Scape | Overview</title>
+</svelte:head>
+
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import AudioStream from '../AudioStream.svelte';
