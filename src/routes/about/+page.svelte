@@ -1,5 +1,5 @@
 <svelte:head>
-    <title>Sense-Scape | About</title>
+	<title>Sense-Scape | About</title>
 </svelte:head>
 
 <h1>About SvelteKit</h1>
