@@ -79,7 +79,7 @@
 			'time time time'
 			'freq freq freq';
 		text-align: center;
-		height: 100vh;
+		height: 90vh;
 	}
 
 	.time {
