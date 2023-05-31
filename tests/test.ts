@@ -29,7 +29,8 @@ test('playing stream updates the sample rate', async ({ page }) => {
 	await page.goto('/');
 	await expect(page.getByText('Rate: null')).toBeVisible();
 	await page.getByRole("button", {name: "Start Stream"}).click();
-	await expect(page.getByText('Rate: 48000')).toBeVisible();
+	await expect(page.getByText('Rate: null')).toBeHidden();
+	await expect(page.getByText('Rate: 44100')).toBeVisible();
 	await expect(page.getByText('freq')).toBeVisible();
 });
 

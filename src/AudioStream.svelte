@@ -8,7 +8,7 @@
 
 	async function startStream() {
 		try {
-			audioContext = new AudioContext();
+			audioContext = new AudioContext({ sampleRate: 44100 });
 			dummySource = createDummyAudioSource(audioContext, 10); // 10 seconds duration
 			const sampleRate = dummySource.buffer?.sampleRate ?? null; // Get the sample rate
 			sampleRateStore.set(sampleRate); // Set the sample rate in the store
@@ -28,7 +28,7 @@
 		if (audioContext) {
 			audioContext.close();
 			audioContext = null;
-            sampleRateStore.set(null);
+			sampleRateStore.set(null);
 		}
 	}
 
