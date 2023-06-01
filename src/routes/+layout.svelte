@@ -8,20 +8,24 @@
 	let analyticsId = import.meta.env.VERCEL_ANALYTICS_ID;
 
 	$: if (browser && analyticsId) {
-		console.log('[Web Vitals]', 'startings vitals');
+		console.log(
+			`%c[Web Vitals]%c`,
+			'color: rgb(120, 120, 120)',
+			'color: inherit',
+			'Updating vitals'
+		);
 		webVitals({
 			path: $page.url.pathname,
 			params: $page.params,
 			analyticsId: analyticsId,
 			debug: dev
 		});
-	} else {
+	} else if (browser) {
 		console.log(
-			'[Web Vitals]',
-			'skipping vitals',
-			browser ? 'running in a browser' : 'not running in a browser',
-			'analyticsId:',
-			analyticsId
+			`%c[Web Vitals]%c`,
+			'color: rgb(120, 120, 120)',
+			'color: inherit',
+			'Skipping vitals - no analyticsId'
 		);
 	}
 </script>
