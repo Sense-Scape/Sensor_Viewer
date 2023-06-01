@@ -17,7 +17,7 @@ const config = {
 		}),
 		csp: {
 			directives: {
-				'script-src': ['self', 'data:'],
+				'script-src': ['self', 'data:', 'va.vercel-scripts.com', 'vercel.live'],
 				'connect-src': ['self', 'vitals.vercel-insights.com']
 			}
 		}
