@@ -33,8 +33,8 @@
 	}
 
 	let cleanup: () => void = () => {
-		console.log('null cleanup');
-	}; // Initialize as empty function
+		// Initialize as empty function
+	};
 	onMount(() => {
 		cleanup = () => {
 			if (dummySource) {

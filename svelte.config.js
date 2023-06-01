@@ -14,7 +14,13 @@ const config = {
 		adapter: adapter({
 			// see the 'Deployment configuration' section below
 			runtime: 'nodejs18.x'
-		})
+		}),
+		csp: {
+			directives: {
+				'script-src': ['self'],
+				'connect-src': ['self', 'vitals.vercel-insights.com']
+			}
+		}
 	}
 };
 
