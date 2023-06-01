@@ -14,8 +14,8 @@ jobs:
         with:
           node-version: v19.9.0
           cache: npm
-      - name: Install npm for CI
-        run: npm ci
+      - name: Install npm
+        run: npm clean-install
       - name: Run unit tests
         run: npm run test:unit
       - name: Install playwright
@@ -27,8 +27,6 @@ jobs:
     needs: test
     if: github.ref != 'refs/heads/main'
     steps:
-      - name: Install npm
-        run: npm i
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Information
@@ -42,10 +40,10 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/main'
     steps:
-      - name: Install npm
-        run: npm i
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
+      - name: Install Vite
+        run: npm install --global vite
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Project Artifacts
