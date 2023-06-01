@@ -12,7 +12,8 @@
 		"test:unit": "vitest run",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write .",
-		"prepare": "husky install"
+		"prepare": "husky install",
+		"clean": "rm -fr .svelte-kit .vercel"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.34.3",
