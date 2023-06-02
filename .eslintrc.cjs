@@ -1,5 +1,4 @@
 module.exports = {
-	ignorePatterns: ['.vercel', '.svelte-kit'],
 	root: true,
 	extends: [
 		'eslint:recommended',
