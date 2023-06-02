@@ -1,8 +1,16 @@
 <script>
 	import { dev, browser } from '$app/environment';
 	import { inject } from '@vercel/analytics';
-	import { page } from '$app/stores';
+
+	// util
 	import { webVitals } from '../lib/vitals';
+
+	// components
+	import Navbar from '../Navbar.svelte';
+
+	//store
+	import { page } from '$app/stores';
+
 	inject({ mode: dev ? 'development' : 'production' });
 
 	let analyticsId = import.meta.env.VERCEL_ANALYTICS_ID;
@@ -31,25 +39,7 @@
 </script>
 
 <main>
-	<header>
-		<nav>
-			<a href="/">Home</a>
-			<a href="/about">About</a>
-		</nav>
-	</header>
+	<Navbar />
 	<!-- +page.svelte is rendered in this <slot> -->
 	<slot />
 </main>
-
-<style>
-	header {
-		display: flex;
-		height: 10vh;
-		width: 100%;
-		align-items: center;
-	}
-
-	a {
-		margin-left: 1rem;
-	}
-</style>

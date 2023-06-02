@@ -1,6 +1,11 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
+
+	// components
 	import AudioStream from '../AudioStream.svelte';
+	import Card from '../Card.svelte';
+
+	// stores
 	import { sampleRateStore } from '../stores';
 
 	let sampleRate: number | null = null;
@@ -21,49 +26,40 @@
 
 <div class="container">
 	<div class="time block">
-		<div class="card">
+		<Card>
 			<p>time</p>
-		</div>
+		</Card>
 	</div>
 	<div class="freq block">
-		<div class="card">
+		<Card>
 			<p>freq</p>
-		</div>
+		</Card>
 	</div>
 	<div class="rate block">
-		<div class="card">
+		<Card>
 			<div>
 				<p>rate</p>
 				<p>Rate: {sampleRate}</p>
 			</div>
-		</div>
+		</Card>
 	</div>
 	<div class="samples block">
-		<div class="card">
+		<Card>
 			<p>samples</p>
 			<AudioStream />
 			<p>don't press play, it's loud dummy data</p>
-		</div>
+		</Card>
 	</div>
 	<div class="resolution block">
-		<div class="card">
+		<Card>
 			<p>resolution</p>
-		</div>
+		</Card>
 	</div>
 </div>
 
 <style>
 	p {
-		height: 100%;
 		margin: 0;
-	}
-
-	.card {
-		border-radius: 0.2rem;
-		text-shadow: 4rem;
-		background-color: #d9d9d9;
-		height: 100%;
-		width: 100%;
 	}
 
 	.block {
@@ -80,6 +76,12 @@
 			'freq freq freq';
 		text-align: center;
 		height: 90vh;
+	}
+
+	@media only screen and (max-width: 600px) {
+		.container {
+			display: block;
+		}
 	}
 
 	.time {

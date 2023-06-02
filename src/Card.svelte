@@ -1,0 +1,18 @@
+<!-- Card.svelte -->
+<script lang="ts">
+</script>
+
+<div>
+	<slot>Card should wrap some content</slot>
+</div>
+
+<style>
+	div {
+		border-radius: 0.2rem;
+		text-shadow: 4rem;
+		background-color: #d9d9d9;
+		height: 100%;
+		width: 100%;
+		padding: 0.2rem;
+	}
+</style>
