@@ -2,11 +2,11 @@
 	import { onDestroy } from 'svelte';
 
 	// components
-	import AudioStream from '../AudioStream.svelte';
-	import Card from '../Card.svelte';
+	import AudioStream from '$lib/AudioStream.svelte';
+	import Card from '$lib/Card.svelte';
 
 	// stores
-	import { sampleRateStore } from '../stores';
+	import { sampleRateStore } from '$lib/stores';
 
 	let sampleRate: number | null = null;
 

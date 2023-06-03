@@ -3,10 +3,10 @@
 	import { inject } from '@vercel/analytics';
 
 	// util
-	import { webVitals } from '../lib/vitals';
+	import { webVitals } from '$lib/vitals';
 
 	// components
-	import Navbar from '../Navbar.svelte';
+	import Navbar from '$lib/Navbar.svelte';
 
 	//store
 	import { page } from '$app/stores';
