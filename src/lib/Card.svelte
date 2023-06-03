@@ -10,7 +10,7 @@
 	div {
 		border-radius: 0.2rem;
 		text-shadow: 4rem;
-		background-color: #d9d9d9;
+		background-color: var(--secondary-color);
 		height: 100%;
 		width: 100%;
 		padding: 0.2rem;

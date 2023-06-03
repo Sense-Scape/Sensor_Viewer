@@ -1,5 +1,12 @@
 # create-svelte
 
+https://www.instagram.com/p/CLt5J4VAx1Y/
+Colors :⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣
+A9A9C4 • D0D1E1 • EBECEF • 908DB9
+⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⠀⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣
+⁣⁣⁣⁣⁣⁣Text Colors ⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣:
+5A5F74 • 5A5F74 • 5A5F74 • EBECEF
+
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
 
 ## Creating a project

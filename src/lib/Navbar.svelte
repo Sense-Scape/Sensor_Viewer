@@ -11,9 +11,12 @@
 		height: 10vh;
 		width: 100%;
 		align-items: center;
+		background-color: var(--quandary-color);
 	}
 
 	a {
-		margin-left: 1rem;
+		color: var(--tertiary-color);
+		margin-left: 0.5rem;
+		margin-right: 0.5rem;
 	}
 </style>
