@@ -13,7 +13,7 @@ const config = {
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
 		adapter: adapter({
 			// see the 'Deployment configuration' section below
-			runtime: 'nodejs18.x'
+			runtime: 'edge'
 		}),
 		csp: {
 			directives: {
