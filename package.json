@@ -13,7 +13,8 @@
 		"lint": "eslint . && prettier --plugin-search-dir . --check .",
 		"format": "prettier --plugin-search-dir . --write .",
 		"prepare": "husky install",
-		"clean": "rm -fr .svelte-kit .vercel"
+		"clean": "rm -fr .svelte-kit .vercel",
+		"test:act": "act -j test"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.34.3",
@@ -22,6 +23,7 @@
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
 		"@vercel/analytics": "^1.0.1",
+		"@vercel/node": "^2.14.4",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte": "^2.26.0",
