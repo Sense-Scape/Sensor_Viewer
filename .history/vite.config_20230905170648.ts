@@ -1,7 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
 
-import { type ViteDevServer } from 'vite'
+import { type ViteDevServer, defineConfig } from 'vite'
 import { Server } from 'socket.io'
 
 const webSocketServer = {
@@ -18,7 +18,7 @@ const webSocketServer = {
 }
 
 export default defineConfig({
-	plugins: [sveltekit(), webSocketServer],
+	plugins: [sveltekit()],
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}']
 	},
