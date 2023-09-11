@@ -21,8 +21,8 @@
 			//     existingWebSocket.close(); // Close the previous WebSocket instance
 			// }
 			if (true) {
-				const newWebSocket = new WebSocket('ws://localhost:10010/public');
-				newWebSocket.addEventListener('message', async () => {
+				const newWebSocket = new WebSocket('ws://localhost:10010');
+				newWebSocket.addEventListener('message', (message: MessageEvent) => {
 					console.log('some other data arrived');
 				});
 			}
@@ -32,6 +32,10 @@
 
 <svelte:head>
 	<title>Sense-Scape | Overview</title>
+	<meta
+		http-equiv="Content-Security-Policy"
+		content="connect-src 'self' vitals.vercel-insights.com vitals.vercel-analytics.com ws://localhost:10010/;"
+	/>
 </svelte:head>
 
 <div class="container">

@@ -21,8 +21,8 @@
 			//     existingWebSocket.close(); // Close the previous WebSocket instance
 			// }
 			if (true) {
-				const newWebSocket = new WebSocket('ws://localhost:10010/public');
-				newWebSocket.addEventListener('message', async () => {
+				const newWebSocket = new WebSocket('ws://localhost:10010/ws');
+				newWebSocket.addEventListener('message', (message: MessageEvent) => {
 					console.log('some other data arrived');
 				});
 			}

@@ -14,20 +14,18 @@
 		sampleRate = value;
 	});
 
-	$: {
-		if (typeof window !== 'undefined') {
-			console.log('here');
-			// if (existingWebSocket) {
-			//     existingWebSocket.close(); // Close the previous WebSocket instance
-			// }
-			if (true) {
-				const newWebSocket = new WebSocket('ws://localhost:10010/public');
-				newWebSocket.addEventListener('message', async () => {
-					console.log('some other data arrived');
-				});
-			}
-		}
-	}
+	import { io } from 'socket.io-client';
+
+	const socket = io()
+
+	socket.on('eventFromServer', (message) => {
+	console.log(message)
+	})
+
+	// Unsubscribe when the component is destroyed
+	onDestroy(() => {
+		unsubscribe();
+	});
 </script>
 
 <svelte:head>

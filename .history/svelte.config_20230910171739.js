@@ -15,13 +15,12 @@ const config = {
 			// see the 'Deployment configuration' section below
 			runtime: 'nodejs18.x'
 		}),
-		csp: {
-			directives: {
-				'script-src': ['self', 'data:', 'va.vercel-scripts.com', 'vercel.live', 'ws://localhost:10010/'],
-				'connect-src': ['self', 'vitals.vercel-insights.com', 'vitals.vercel-analytics.com', 'ws://localhost:10010/']
-			}
-		}
-
+		// csp: {
+		// 	directives: {
+		// 		'script-src': ['self', 'data:', 'va.vercel-scripts.com', 'vercel.live'],
+		// 		'connect-src': ['self', 'vitals.vercel-insights.com', 'vitals.vercel-analytics.com']
+		// 	}
+		// }
 	}
 };
 
