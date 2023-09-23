@@ -16,6 +16,14 @@
 		sampleRate = value;
 	});
 
+	// Setting up of time domain plot
+	let chart;
+	let yValues;
+	let xValues;
+	let ctx;
+	let chartCanvas;
+
+	// Callback that will receive and print web socket dat
 	$: {
 		if (typeof window !== 'undefined') {
 			// if (existingWebSocket) {
@@ -25,44 +33,53 @@
 				const newWebSocket = new WebSocket('ws://localhost:10010/DataTypes/TimeChunk');
 				newWebSocket.addEventListener('message', async (event) => {
 					const receivedMessage = event.data; // Access the received message from the event object
-					console.log('Received message:', receivedMessage);
+
+					// const position = receivedMessage.length - 2; // Position at which you want to insert the character
+					// const characterToInsert = ',';
+					// const modifiedString =
+					// 	receivedMessage.slice(0, position) +
+					// 	characterToInsert +
+					// 	receivedMessage.slice(position);
+
+					const jsonObject = JSON.parse(receivedMessage);
+					// console.log(jsonObject);
+					try {
+						chart.data.datasets[0].data = jsonObject['TimeChunk']['Channels']['0'];
+						const sampleArray = new Array(512).fill(0);
+						chart.data.labels = sampleArray;
+						chart.update();
+					} catch (error) {
+						console.error('Error processing WebSocket message:', error);
+					} // Re-render the chart with updated data
 				});
 			}
 		}
 	}
 
-	let chartData = [20, 100, 50, 12, 20, 130, 45];
-	let Labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-	let ctx;
-	let chartCanvas;
+	// Create the chart when the component is mounted
+	onMount(() => {
+		ctx = document.getElementById('myChart');
 
-	const xValues = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
-
-	new Chart('myChart', {
-		type: 'line',
-		data: {
-			labels: xValues,
-			datasets: [
-				{
-					data: [860, 1140, 1060, 1060, 1070, 1110, 1330, 2210, 7830, 2478],
-					borderColor: 'red',
-					fill: false
-				},
-				{
-					data: [1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
-					borderColor: 'green',
-					fill: false
-				},
-				{
-					data: [300, 700, 2000, 5000, 6000, 4000, 2000, 1000, 200, 100],
-					borderColor: 'blue',
-					fill: false
+		chart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: xValues,
+				datasets: [
+					{
+						data: yValues,
+						borderColor: 'red',
+						fill: false
+					}
+				]
+			},
+			options: {
+				legend: { display: false },
+				animation: {
+					// Disable animations
+					duration: 0 // Set the duration to 0 for all animations
 				}
-			]
-		},
-		options: {
-			legend: { display: false }
-		}
+			}
+		});
 	});
 </script>
 
@@ -72,7 +89,7 @@
 
 <div class="container">
 	<div class="time block">
-		<canvas bind:this={chartCanvas} id="myChart" />
+		<canvas bind:this={chart} id="myChart" />
 	</div>
 	<div class="freq block">
 		<Card>
