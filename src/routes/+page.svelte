@@ -21,7 +21,6 @@
 	let yValues;
 	let xValues;
 	let ctx;
-	let chartCanvas;
 
 	// Callback that will receive and print web socket dat
 	$: {
@@ -45,8 +44,7 @@
 					// console.log(jsonObject);
 					try {
 						chart.data.datasets[0].data = jsonObject['TimeChunk']['Channels']['0'];
-						const sampleArray = new Array(512).fill(0);
-						chart.data.labels = sampleArray;
+						chart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
 						chart.update();
 					} catch (error) {
 						console.error('Error processing WebSocket message:', error);
