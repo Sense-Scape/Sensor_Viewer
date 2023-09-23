@@ -17,35 +17,28 @@
 	});
 
 	// Setting up of time domain plot
-	let chart;
-	let yValues;
-	let xValues;
+	let TimeDomainChart;
+	let TimeDomainYValues;
+	let TimeDomainXValues;
 	let ctx;
 
-	// Callback that will receive and print web socket dat
+	// Callback function used to connect to the websocket, retrieve data
+	// and update the time domain plot
 	$: {
 		if (typeof window !== 'undefined') {
-			// if (existingWebSocket) {
-			//     existingWebSocket.close(); // Close the previous WebSocket instance
-			// }
 			if (true) {
+				// First we try connect to the websocket and listen
+				// To the TimeChunk topic and start listening
 				const newWebSocket = new WebSocket('ws://localhost:10010/DataTypes/TimeChunk');
 				newWebSocket.addEventListener('message', async (event) => {
-					const receivedMessage = event.data; // Access the received message from the event object
-
-					// const position = receivedMessage.length - 2; // Position at which you want to insert the character
-					// const characterToInsert = ',';
-					// const modifiedString =
-					// 	receivedMessage.slice(0, position) +
-					// 	characterToInsert +
-					// 	receivedMessage.slice(position);
-
+					// Lets get the JSON document from the websocket and extract the data
+					const receivedMessage = event.data;
 					const jsonObject = JSON.parse(receivedMessage);
-					// console.log(jsonObject);
+					// Then try update the plot with the data
 					try {
-						chart.data.datasets[0].data = jsonObject['TimeChunk']['Channels']['0'];
-						chart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
-						chart.update();
+						TimeDomainChart.data.datasets[0].data = jsonObject['TimeChunk']['Channels']['0'];
+						TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
+						TimeDomainChart.update();
 					} catch (error) {
 						console.error('Error processing WebSocket message:', error);
 					} // Re-render the chart with updated data
@@ -54,17 +47,17 @@
 		}
 	}
 
-	// Create the chart when the component is mounted
+	// Create the time domain chart and link mount it to the HTML canvas
 	onMount(() => {
-		ctx = document.getElementById('myChart');
+		ctx = document.getElementById('TimeDomainChart');
 
-		chart = new Chart(ctx, {
+		TimeDomainChart = new Chart(ctx, {
 			type: 'line',
 			data: {
-				labels: xValues,
+				labels: TimeDomainXValues,
 				datasets: [
 					{
-						data: yValues,
+						data: TimeDomainYValues,
 						borderColor: 'red',
 						fill: false
 					}
@@ -87,7 +80,7 @@
 
 <div class="container">
 	<div class="time block">
-		<canvas bind:this={chart} id="myChart" />
+		<canvas bind:this={TimeDomainChart} id="TimeDomainChart" />
 	</div>
 	<div class="freq block">
 		<Card>
