@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
+	import Chart from 'chart.js/auto';
+	import { onMount } from 'svelte';
 
 	// components
 	import AudioStream from '$lib/AudioStream.svelte';
@@ -14,9 +16,61 @@
 		sampleRate = value;
 	});
 
-	// Unsubscribe when the component is destroyed
-	onDestroy(() => {
-		unsubscribe();
+	// Setting up of time domain plot
+	let TimeDomainChart;
+	let TimeDomainYValues;
+	let TimeDomainXValues;
+	let ctx;
+
+	// Callback function used to connect to the websocket, retrieve data
+	// and update the time domain plot
+	$: {
+		if (typeof window !== 'undefined') {
+			if (true) {
+				// First we try connect to the websocket and listen
+				// To the TimeChunk topic and start listening
+				const newWebSocket = new WebSocket('ws://localhost:10010/DataTypes/TimeChunk');
+				newWebSocket.addEventListener('message', async (event) => {
+					// Lets get the JSON document from the websocket and extract the data
+					const receivedMessage = event.data;
+					const jsonObject = JSON.parse(receivedMessage);
+					// Then try update the plot with the data
+					try {
+						TimeDomainChart.data.datasets[0].data = jsonObject['TimeChunk']['Channels']['0'];
+						TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
+						TimeDomainChart.update();
+					} catch (error) {
+						console.error('Error processing WebSocket message:', error);
+					} // Re-render the chart with updated data
+				});
+			}
+		}
+	}
+
+	// Create the time domain chart and link mount it to the HTML canvas
+	onMount(() => {
+		ctx = document.getElementById('TimeDomainChart');
+
+		TimeDomainChart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: TimeDomainXValues,
+				datasets: [
+					{
+						data: TimeDomainYValues,
+						borderColor: 'red',
+						fill: false
+					}
+				]
+			},
+			options: {
+				legend: { display: false },
+				animation: {
+					// Disable animations
+					duration: 0 // Set the duration to 0 for all animations
+				}
+			}
+		});
 	});
 </script>
 
@@ -45,9 +99,7 @@
 
 <div class="container">
 	<div class="time block">
-		<Card>
-			<p>time</p>
-		</Card>
+		<canvas bind:this={TimeDomainChart} id="TimeDomainChart" />
 	</div>
 	<div class="freq block">
 		<Card>
