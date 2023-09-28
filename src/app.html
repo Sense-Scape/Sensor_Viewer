@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		%sveltekit.head%
+	</head>
 
-<head>
-	<meta charset="utf-8" />
-	<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-	%sveltekit.head%
-</head>
-
-<body data-sveltekit-preload-data="hover">
-	<div style="display: contents">%sveltekit.body%</div>
-</body>
-
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
 </html>
 
 <style>
 	:root {
 		/* text colours */
-		--dark-text-color: #908db9;
-		--light-text-color: #ebecef;
+		--dark-text-color: #333333; /* A dark gray, but not true black */
+		--light-text-color: #f2f2f2; /* A light gray, but not true white */
+
+		/* background colors */
+		--primary-background-color: #f7f7f9; /* Very light gray, as main background */
+		--secondary-background-color: #ebecef;
 
 		/* other colours */
 		--primary-color: #a9a9c4;
@@ -32,6 +34,6 @@
 
 	body {
 		margin: 0;
-		background-color: var(--tertiary-color);
+		background-color: var(--primary-background-color);
 	}
 </style>

@@ -11,11 +11,11 @@
 		height: 10vh;
 		width: 100%;
 		align-items: center;
-		background-color: var(--quandary-color);
+		background-color: var(--secondary-background-color);
 	}
 
 	a {
-		color: var(--tertiary-color);
+		color: var(--dark-text-color);
 		margin-left: 0.5rem;
 		margin-right: 0.5rem;
 	}
