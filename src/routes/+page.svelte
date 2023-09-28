@@ -26,24 +26,22 @@
 	// and update the time domain plot
 	$: {
 		if (typeof window !== 'undefined') {
-			if (true) {
-				// First we try connect to the websocket and listen
-				// To the TimeChunk topic and start listening
-				const newWebSocket = new WebSocket('ws://localhost:10010/DataTypes/TimeChunk');
-				newWebSocket.addEventListener('message', async (event) => {
-					// Lets get the JSON document from the websocket and extract the data
-					const receivedMessage = event.data;
-					const jsonObject = JSON.parse(receivedMessage);
-					// Then try update the plot with the data
-					try {
-						TimeDomainChart.data.datasets[0].data = jsonObject['TimeChunk']['Channels']['0'];
-						TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
-						TimeDomainChart.update();
-					} catch (error) {
-						console.error('Error processing WebSocket message:', error);
-					} // Re-render the chart with updated data
-				});
-			}
+			// First we try connect to the websocket and listen
+			// To the TimeChunk topic and start listening
+			const newWebSocket = new WebSocket('ws://localhost:10010/DataTypes/TimeChunk');
+			newWebSocket.addEventListener('message', async (event) => {
+				// Lets get the JSON document from the websocket and extract the data
+				const receivedMessage = event.data;
+				const jsonObject = JSON.parse(receivedMessage);
+				// Then try update the plot with the data
+				try {
+					TimeDomainChart.data.datasets[0].data = jsonObject['TimeChunk']['Channels']['0'];
+					TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
+					TimeDomainChart.update();
+				} catch (error) {
+					console.error('Error processing WebSocket message:', error);
+				} // Re-render the chart with updated data
+			});
 		}
 	}
 
@@ -72,6 +70,7 @@
 			}
 		});
 	});
+	onDestroy(unsubscribe);
 </script>
 
 <svelte:head>
