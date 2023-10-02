@@ -4,11 +4,11 @@
 	import { onMount } from 'svelte';
 
 	// components
-	import AudioStream from '../AudioStream.svelte';
-	import Card from '../Card.svelte';
+	import AudioStream from '$lib/AudioStream.svelte';
+	import Card from '$lib/Card.svelte';
 
 	// stores
-	import { sampleRateStore } from '../stores';
+	import { sampleRateStore } from '$lib/stores';
 
 	let sampleRate: number | null = null;
 
@@ -26,24 +26,22 @@
 	// and update the time domain plot
 	$: {
 		if (typeof window !== 'undefined') {
-			if (true) {
-				// First we try connect to the websocket and listen
-				// To the TimeChunk topic and start listening
-				const newWebSocket = new WebSocket('ws://localhost:10010/DataTypes/TimeChunk');
-				newWebSocket.addEventListener('message', async (event) => {
-					// Lets get the JSON document from the websocket and extract the data
-					const receivedMessage = event.data;
-					const jsonObject = JSON.parse(receivedMessage);
-					// Then try update the plot with the data
-					try {
-						TimeDomainChart.data.datasets[0].data = jsonObject['TimeChunk']['Channels']['0'];
-						TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
-						TimeDomainChart.update();
-					} catch (error) {
-						console.error('Error processing WebSocket message:', error);
-					} // Re-render the chart with updated data
-				});
-			}
+			// First we try connect to the websocket and listen
+			// To the TimeChunk topic and start listening
+			const newWebSocket = new WebSocket('ws://localhost:10010/DataTypes/TimeChunk');
+			newWebSocket.addEventListener('message', async (event) => {
+				// Lets get the JSON document from the websocket and extract the data
+				const receivedMessage = event.data;
+				const jsonObject = JSON.parse(receivedMessage);
+				// Then try update the plot with the data
+				try {
+					TimeDomainChart.data.datasets[0].data = jsonObject['TimeChunk']['Channels']['0'];
+					TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
+					TimeDomainChart.update();
+				} catch (error) {
+					console.error('Error processing WebSocket message:', error);
+				} // Re-render the chart with updated data
+			});
 		}
 	}
 
@@ -72,10 +70,30 @@
 			}
 		});
 	});
+	onDestroy(unsubscribe);
 </script>
 
 <svelte:head>
 	<title>Sense-Scape | Overview</title>
+	<meta name="description" content="Some sweet description words" />
+
+	<!-- Open Graph Meta Tags -->
+	<meta property="og:title" content="Sense-Scape | Overview" />
+	<meta property="og:site_name" content="Sense Scape Site" />
+	<!-- TODO make this dynamic -->
+	<meta property="og:url" content="https://svelte-website-inky.vercel.app/" />
+	<meta property="og:description" content="Some sweet description words for Open Graph" />
+	<meta property="og:type" content="website" />
+	<!-- <meta property="og:image" content="" /> -->
+
+	<!-- Twitter Meta Tags -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta property="twitter:domain" content="svelte-website-inky.vercel.app" />
+	<!-- TODO make this dynamic -->
+	<meta property="twitter:url" content="https://svelte-website-inky.vercel.app/" />
+	<meta name="twitter:title" content="Sense-Scape | Overview" />
+	<meta name="twitter:description" content="Some sweet description words for twitter" />
+	<!-- <meta name="twitter:image" content=""> -->
 </svelte:head>
 
 <div class="container">

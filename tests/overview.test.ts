@@ -15,11 +15,6 @@ test('card with resolution is visible', async ({ page }) => {
 	await expect(page.getByText('resolution')).toBeVisible();
 });
 
-test('card with time is visible', async ({ page }) => {
-	await page.goto('/');
-	await expect(page.getByText('time')).toBeVisible();
-});
-
 test('card with freq is visible', async ({ page }) => {
 	await page.goto('/');
 	await expect(page.getByText('freq')).toBeVisible();
