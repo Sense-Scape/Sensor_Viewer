@@ -17,8 +17,8 @@ const config = {
 		}),
 		csp: {
 			directives: {
-				'script-src': ['self', 'data:', 'va.vercel-scripts.com', 'vercel.live', 'ws://localhost:10010/'],
-				'connect-src': ['self', 'vitals.vercel-insights.com', 'vitals.vercel-analytics.com', 'ws://localhost:10010/']
+				'script-src': ['self', 'data:', 'va.vercel-scripts.com', 'vercel.live', 'ws://localhost:10100/'],
+				'connect-src': ['self', 'vitals.vercel-insights.com', 'vitals.vercel-analytics.com', 'ws://localhost:10100/']
 			}
 		}
 
