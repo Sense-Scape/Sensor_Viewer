@@ -4,11 +4,11 @@
 	import { onMount } from 'svelte';
 
 	// components
-	import AudioStream from '../AudioStream.svelte';
-	import Card from '../Card.svelte';
+	import AudioStream from '$lib/AudioStream.svelte';
+	import Card from '$lib/Card.svelte';
 
 	// stores
-	import { sampleRateStore } from '../stores';
+	import { sampleRateStore } from '$lib/stores';
 
 	let sampleRate: number | null = null;
 
@@ -114,10 +114,30 @@
 			}
 		});
 	});
+	onDestroy(unsubscribe);
 </script>
 
 <svelte:head>
 	<title>Sense-Scape | Overview</title>
+	<meta name="description" content="Some sweet description words" />
+
+	<!-- Open Graph Meta Tags -->
+	<meta property="og:title" content="Sense-Scape | Overview" />
+	<meta property="og:site_name" content="Sense Scape Site" />
+	<!-- TODO make this dynamic -->
+	<meta property="og:url" content="https://svelte-website-inky.vercel.app/" />
+	<meta property="og:description" content="Some sweet description words for Open Graph" />
+	<meta property="og:type" content="website" />
+	<!-- <meta property="og:image" content="" /> -->
+
+	<!-- Twitter Meta Tags -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta property="twitter:domain" content="svelte-website-inky.vercel.app" />
+	<!-- TODO make this dynamic -->
+	<meta property="twitter:url" content="https://svelte-website-inky.vercel.app/" />
+	<meta name="twitter:title" content="Sense-Scape | Overview" />
+	<meta name="twitter:description" content="Some sweet description words for twitter" />
+	<!-- <meta name="twitter:image" content=""> -->
 </svelte:head>
 
 <div class="pageContainer">

@@ -13,7 +13,7 @@ const config = {
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
 		adapter: adapter({
 			// see the 'Deployment configuration' section below
-			runtime: 'nodejs18.x'
+			runtime: 'edge'
 		}),
 		csp: {
 			directives: {
@@ -21,7 +21,6 @@ const config = {
 				'connect-src': ['self', 'vitals.vercel-insights.com', 'vitals.vercel-analytics.com', 'ws://localhost:10100/']
 			}
 		}
-
 	}
 };
 
