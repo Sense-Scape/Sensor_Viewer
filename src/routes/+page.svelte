@@ -82,10 +82,25 @@
 			// Lets get the JSON document from the websocket and extract the data
 			const receivedMessage = event.data;
 			const jsonObject = JSON.parse(receivedMessage);
+
+			const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
+			FreqDomainChart.data['datasets'] = [];
 			// Then try update the plot with the data
 			try {
-				FreqDomainChart.data.datasets[0].data = jsonObject['FFTMagnitudeChunk']['Channels']['0'];
-				FreqDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
+				let numChannels = Number(jsonObject['FFTMagnitudeChunk']['NumChannels']);
+				for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+					const dataset = {
+						labels: undefined,
+						data: jsonObject['FFTMagnitudeChunk']['Channels'][String(channelIndex)],
+						borderColor: colors[channelIndex],
+						fill: false
+					};
+					FreqDomainChart.data['datasets'].push(dataset);
+					FreqDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
+				}
+
+				// console.log(datasets);
+
 				FreqDomainChart.update();
 			} catch (error) {
 				console.error('Error processing WebSocket message:', error);
@@ -149,7 +164,6 @@
 
 <style>
 	.graphContainer {
-		display: flex;
 		flex-direction: row;
 		justify-content: center;
 		align-items: center;
