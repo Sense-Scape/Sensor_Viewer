@@ -155,7 +155,7 @@
 	<!-- <meta name="twitter:image" content=""> -->
 </svelte:head>
 
-<div class="pageContainer">
+<div class="pageContainer" style="background-color:#c2c2c2">
 	<div class="graphContainer">
 		<canvas class="timePlot" bind:this={TimeDomainChart} id="TimeDomainChart" />
 		<canvas class="freqPlot" bind:this={FreqDomainChart} id="FreqDomainChart" />
