@@ -188,22 +188,54 @@
 	<!-- <meta name="twitter:image" content=""> -->
 </svelte:head>
 
-<div class="graphContainer">
-	<canvas class="canvas" bind:this={TimeDomainChart} id="TimeDomainChart" />
-	<canvas class="canvas" bind:this={FreqDomainChart} id="FreqDomainChart" />
+<div>
+	<div class="pageContainer">
+		<div class="parameterContainer">
+			<p class="parameter">test</p>
+			<p class="parameter">test</p>
+			<p class="parameter">test</p>
+		</div>
+		<div class="graphContainer">
+			<canvas class="canvas" bind:this={TimeDomainChart} id="TimeDomainChart" />
+			<canvas class="canvas" bind:this={FreqDomainChart} id="FreqDomainChart" />
+		</div>
+	</div>
 </div>
 
 <style>
 	.graphContainer {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		align-items: left;
 		max-height: 100%;
-		max-width: 100%;
+		max-width: 50%;
 	}
 
 	.canvas {
 		max-width: 100%; /* Set desired width for each canvas */
 		max-height: 100%;
+	}
+
+	.parameterContainer {
+		display: flex;
+		justify-content: space-between;
+		flex-direction: row;
+		align-items: center;
+		max-height: 100%;
+		max-width: 75%;
+	}
+	.parameter {
+		display: flex;
+		flex-direction: row;
+		align-items: left;
+		max-height: 100%;
+		max-width: 10%;
+	}
+	.pageContainer {
+		display: flex;
+		flex-direction: column;
+		align-items: left;
+		max-height: 100%;
+		max-width: 100%;
 	}
 </style>
