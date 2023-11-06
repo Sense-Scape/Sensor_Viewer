@@ -22,10 +22,16 @@
 	let TimeDomainXValues = [0];
 	let ctxTime;
 
+	export let timeSampleRate = 'X';
+	export let timeChunkSize = 'X';
+
 	let FreqDomainChart;
 	let FreqDomainYValues = [0];
 	let FreqDomainXValues = [0];
 	let ctxFreq;
+
+	export let freqSampleRate = 'X';
+	export let freqChunkSize = 'X';
 
 	// Callback function used to connect to the websocket, retrieve data
 	// and update the time domain plot
@@ -41,18 +47,48 @@
 	// Create the time domain chart and link mount it to the HTML canvas
 	onMount(() => {
 		const TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
+		let parsedData = null;
+		let datasets = [];
 		TimeWebSocket.addEventListener('message', async (event) => {
-			// Lets get the JSON document from the websocket and extract the data
-			const receivedMessage = event.data;
-			const jsonObject = JSON.parse(receivedMessage);
-			// Then try update the plot with the data
-			try {
-				TimeDomainChart.data.datasets[0].data = jsonObject['TimeChunk']['Channels']['0'];
-				TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
-				TimeDomainChart.update();
-			} catch (error) {
-				console.error('Error processing WebSocket message:', error);
-			} // Re-render the chart with updated data
+			// Check if parsed data exists, otherwise parse it once
+			if (!parsedData) {
+				const receivedMessage = event.data;
+				parsedData = JSON.parse(receivedMessage);
+
+				// Create datasets array
+				const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
+				for (
+					let channelIndex = 0;
+					channelIndex < parsedData['TimeChunk']['NumChannels'];
+					channelIndex++
+				) {
+					const dataset = {
+						labels: undefined,
+						data: [],
+						borderColor: colors[channelIndex],
+						fill: false
+					};
+					datasets.push(dataset);
+				}
+			}
+
+			const newData = JSON.parse(event.data)['TimeChunk']['Channels'];
+			const numChannels = JSON.parse(event.data)['TimeChunk']['NumChannels'];
+			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+				datasets[channelIndex].data = newData[channelIndex];
+			}
+
+			// Update chart data efficiently
+			TimeDomainChart.data.datasets = datasets;
+			TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
+			TimeDomainChart.update();
+
+			if (timeSampleRate !== JSON.parse(event.data)['TimeChunk']['SampleRate']) {
+				timeSampleRate = JSON.parse(event.data)['TimeChunk']['SampleRate'];
+			}
+			if (timeChunkSize !== JSON.parse(event.data)['TimeChunk']['ChunkSize']) {
+				timeChunkSize = JSON.parse(event.data)['TimeChunk']['ChunkSize'];
+			}
 		});
 
 		ctxTime = document.getElementById('TimeDomainChart');
@@ -78,18 +114,50 @@
 		});
 
 		const FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
+		let FreqParsedData = null;
+		let freqDatasets = [];
+
 		FreqWebSocket.addEventListener('message', async (event) => {
-			// Lets get the JSON document from the websocket and extract the data
-			const receivedMessage = event.data;
-			const jsonObject = JSON.parse(receivedMessage);
-			// Then try update the plot with the data
-			try {
-				FreqDomainChart.data.datasets[0].data = jsonObject['FFTMagnitudeChunk']['Channels']['0'];
-				FreqDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
-				FreqDomainChart.update();
-			} catch (error) {
-				console.error('Error processing WebSocket message:', error);
-			} // Re-render the chart with updated data
+			// Check if parsed data exists, otherwise parse it once
+			if (!FreqParsedData) {
+				const receivedMessage = event.data;
+				FreqParsedData = JSON.parse(receivedMessage);
+
+				// Create datasets array
+				const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
+				for (
+					let channelIndex = 0;
+					channelIndex < FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
+					channelIndex++
+				) {
+					const dataset = {
+						labels: undefined,
+						data: [],
+						borderColor: colors[channelIndex],
+						fill: false
+					};
+					freqDatasets.push(dataset);
+				}
+			}
+
+			// Update datasets with new data
+			const newData = JSON.parse(event.data)['FFTMagnitudeChunk']['Channels'];
+			const numChannels = JSON.parse(event.data)['FFTMagnitudeChunk']['NumChannels'];
+			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+				freqDatasets[channelIndex].data = newData[channelIndex];
+			}
+
+			// Update chart data efficiently
+			FreqDomainChart.data.datasets = freqDatasets;
+			FreqDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
+			FreqDomainChart.update();
+
+			if (freqSampleRate !== JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate']) {
+				freqSampleRate = JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate'];
+			}
+			if (freqChunkSize !== JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize']) {
+				freqChunkSize = JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize'];
+			}
 		});
 
 		ctxFreq = document.getElementById('FreqDomainChart');
@@ -140,32 +208,70 @@
 	<!-- <meta name="twitter:image" content=""> -->
 </svelte:head>
 
-<div class="pageContainer">
+<div>
+	<!-- <div class="pageContainer"> -->
 	<div class="graphContainer">
-		<canvas class="timePlot" bind:this={TimeDomainChart} id="TimeDomainChart" />
-		<canvas class="freqPlot" bind:this={FreqDomainChart} id="FreqDomainChart" />
+		<div>
+			<div class="parameterContainer">
+				<p class="parameter">Sample Rate: {timeSampleRate}</p>
+				<p class="parameter">Chunk Size: {timeChunkSize}</p>
+			</div>
+			<div>
+				<canvas class="canvas" bind:this={TimeDomainChart} id="TimeDomainChart" />
+			</div>
+		</div>
+		<div>
+			<div class="parameterContainer">
+				<p class="parameter">Sample Rate: {freqSampleRate}</p>
+				<p class="parameter">Chunk Size: {freqChunkSize}</p>
+			</div>
+			<div>
+				<canvas class="canvas" bind:this={FreqDomainChart} id="FreqDomainChart" />
+			</div>
+		</div>
 	</div>
+	<!-- </div> -->
 </div>
 
 <style>
 	.graphContainer {
 		display: flex;
+		flex-direction: column;
+		align-items: left;
+		max-height: 100%;
+		max-width: 100%;
+		width: 100%;
+	}
+
+	.canvas {
+		max-width: 100%; /* Set desired width for each canvas */
+		max-height: 100%;
+		width: 100%;
+	}
+
+	.parameterContainer {
+		display: flex;
+		/* justify-content: space-between; */
 		flex-direction: row;
-		justify-content: center;
 		align-items: center;
-		height: 50vh; /* Reduced height from 100vh */
+		max-height: 100%;
+		max-width: 100%;
+		width: 100%;
 	}
-
-	.timePlot,
-	.freqPlot {
-		width: 250px;
-		height: 100px;
+	.parameter {
+		display: flex;
+		flex-direction: row;
+		align-items: left;
+		max-height: 100%;
+		max-width: 10%;
+		width: 100%;
 	}
-
-	@media screen and (max-width: 600px) {
-		.timePlot,
-		.freqPlot {
-			height: 200px;
-		}
+	.pageContainer {
+		display: flex;
+		flex-direction: column;
+		align-items: left;
+		max-height: 100%;
+		max-width: 100%;
+		width: 100%;
 	}
 </style>
