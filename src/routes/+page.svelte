@@ -22,10 +22,16 @@
 	let TimeDomainXValues = [0];
 	let ctxTime;
 
+	export let timeSampleRate = 'X';
+	export let timeChunkSize = 'X';
+
 	let FreqDomainChart;
 	let FreqDomainYValues = [0];
 	let FreqDomainXValues = [0];
 	let ctxFreq;
+
+	export let freqSampleRate = 'X';
+	export let freqChunkSize = 'X';
 
 	// Callback function used to connect to the websocket, retrieve data
 	// and update the time domain plot
@@ -189,40 +195,54 @@
 </svelte:head>
 
 <div>
-	<div class="pageContainer">
-		<div class="parameterContainer">
-			<p class="parameter">test</p>
-			<p class="parameter">test</p>
-			<p class="parameter">test</p>
+	<!-- <div class="pageContainer"> -->
+	<div class="graphContainer">
+		<div>
+			<div class="parameterContainer">
+				<p class="parameter">Sample Rate: {timeSampleRate}</p>
+				<p class="parameter">Chunk Size: {timeChunkSize}</p>
+			</div>
+			<div>
+				<canvas class="canvas" bind:this={TimeDomainChart} id="TimeDomainChart" />
+			</div>
 		</div>
-		<div class="graphContainer">
-			<canvas class="canvas" bind:this={TimeDomainChart} id="TimeDomainChart" />
-			<canvas class="canvas" bind:this={FreqDomainChart} id="FreqDomainChart" />
+		<div>
+			<div class="parameterContainer">
+				<p class="parameter">Sample Rate: {freqSampleRate}</p>
+				<p class="parameter">Chunk Size: {freqChunkSize}</p>
+			</div>
+			<div>
+				<canvas class="canvas" bind:this={FreqDomainChart} id="FreqDomainChart" />
+			</div>
 		</div>
 	</div>
+	<!-- </div> -->
 </div>
 
 <style>
 	.graphContainer {
 		display: flex;
-		flex-direction: row;
+		flex-direction: column;
 		align-items: left;
 		max-height: 100%;
-		max-width: 50%;
+		max-width: 100%;
+		width: 100%;
 	}
 
 	.canvas {
 		max-width: 100%; /* Set desired width for each canvas */
 		max-height: 100%;
+		width: 100%;
 	}
 
 	.parameterContainer {
 		display: flex;
-		justify-content: space-between;
+		/* justify-content: space-between; */
 		flex-direction: row;
 		align-items: center;
 		max-height: 100%;
-		max-width: 75%;
+		max-width: 100%;
+		width: 100%;
 	}
 	.parameter {
 		display: flex;
@@ -230,6 +250,7 @@
 		align-items: left;
 		max-height: 100%;
 		max-width: 10%;
+		width: 100%;
 	}
 	.pageContainer {
 		display: flex;
@@ -237,5 +258,6 @@
 		align-items: left;
 		max-height: 100%;
 		max-width: 100%;
+		width: 100%;
 	}
 </style>
