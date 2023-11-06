@@ -82,6 +82,13 @@
 			TimeDomainChart.data.datasets = datasets;
 			TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
 			TimeDomainChart.update();
+
+			if (timeSampleRate !== JSON.parse(event.data)['TimeChunk']['SampleRate']) {
+				timeSampleRate = JSON.parse(event.data)['TimeChunk']['SampleRate'];
+			}
+			if (timeChunkSize !== JSON.parse(event.data)['TimeChunk']['ChunkSize']) {
+				timeChunkSize = JSON.parse(event.data)['TimeChunk']['ChunkSize'];
+			}
 		});
 
 		ctxTime = document.getElementById('TimeDomainChart');
@@ -144,6 +151,13 @@
 			FreqDomainChart.data.datasets = freqDatasets;
 			FreqDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
 			FreqDomainChart.update();
+
+			if (freqSampleRate !== JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate']) {
+				freqSampleRate = JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate'];
+			}
+			if (freqChunkSize !== JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize']) {
+				freqChunkSize = JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize'];
+			}
 		});
 
 		ctxFreq = document.getElementById('FreqDomainChart');
