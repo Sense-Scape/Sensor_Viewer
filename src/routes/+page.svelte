@@ -239,17 +239,11 @@
 		display: flex;
 		/* justify-content: space-between; */
 		flex-direction: row;
-		align-items: center;
-		max-height: 100%;
-		max-width: 100%;
 		width: 100%;
 	}
 	.parameter {
-		display: flex;
-		flex-direction: row;
-		align-items: left;
+		max-width: 100%; /* Set desired width for each canvas */
 		max-height: 100%;
-		max-width: 10%;
 		width: 100%;
 	}
 </style>
