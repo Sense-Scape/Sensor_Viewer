@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Chart from 'chart.js/auto';
 	import { onMount } from 'svelte';
-
 	// Setting up of time domain plot
 	let TimeDomainChart;
 	let TimeDomainYValues = [0];
@@ -35,6 +34,9 @@
 		const TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
 		let parsedData = null;
 		let datasets = [];
+
+		ctxTime, (ctxFreq = InitialiseGraphGroup());
+
 		TimeWebSocket.addEventListener('message', async (event) => {
 			// Check if parsed data exists, otherwise parse it once
 			if (!parsedData) {
@@ -74,28 +76,6 @@
 			}
 			if (timeChunkSize !== JSON.parse(event.data)['TimeChunk']['ChunkSize']) {
 				timeChunkSize = JSON.parse(event.data)['TimeChunk']['ChunkSize'];
-			}
-		});
-
-		ctxTime = document.getElementById('TimeDomainChart');
-		TimeDomainChart = new Chart(ctxTime, {
-			type: 'line',
-			data: {
-				labels: TimeDomainXValues,
-				datasets: [
-					{
-						data: TimeDomainYValues,
-						borderColor: 'red',
-						fill: false
-					}
-				]
-			},
-			options: {
-				legend: { display: false },
-				animation: {
-					// Disable animations
-					duration: 1 // Set the duration to 0 for all animations
-				}
 			}
 		});
 
@@ -145,6 +125,30 @@
 				freqChunkSize = JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize'];
 			}
 		});
+	});
+
+	function InitialiseGraphGroup() {
+		ctxTime = document.getElementById('TimeDomainChart');
+		TimeDomainChart = new Chart(ctxTime, {
+			type: 'line',
+			data: {
+				labels: TimeDomainXValues,
+				datasets: [
+					{
+						data: TimeDomainYValues,
+						borderColor: 'red',
+						fill: false
+					}
+				]
+			},
+			options: {
+				legend: { display: false },
+				animation: {
+					// Disable animations
+					duration: 1 // Set the duration to 0 for all animations
+				}
+			}
+		});
 
 		ctxFreq = document.getElementById('FreqDomainChart');
 		FreqDomainChart = new Chart(ctxFreq, {
@@ -166,7 +170,11 @@
 				}
 			}
 		});
-	});
+
+		return [ctxTime, ctxFreq];
+	}
+
+	function UpdateGraphGroup(numChannel, channelData, sampleRate, chunkSize) {}
 </script>
 
 <svelte:head>
@@ -193,25 +201,27 @@
 </svelte:head>
 
 <div>
-	<div class-="sensorGroup">
-		<div class="sensorGroupTitle">TEst</div>
-		<div class="graphSuperGroup">
-			<div class="graphGroup">
-				<div class="parameterContainer">
-					<p class="parameter">Sample Rate: {timeSampleRate}</p>
-					<p class="parameter">Chunk Size: {timeChunkSize}</p>
+	<div id="sensors">
+		<div class-="sensorGroup">
+			<div class="sensorGroupTitle">Test</div>
+			<div class="graphSuperGroup">
+				<div class="graphGroup">
+					<div class="parameterContainer">
+						<p class="parameter">Sample Rate: {timeSampleRate}</p>
+						<p class="parameter">Chunk Size: {timeChunkSize}</p>
+					</div>
+					<div>
+						<canvas class="canvas" bind:this={TimeDomainChart} id="TimeDomainChart" />
+					</div>
 				</div>
-				<div>
-					<canvas class="canvas" bind:this={TimeDomainChart} id="TimeDomainChart" />
-				</div>
-			</div>
-			<div class="graphGroup">
-				<div class="parameterContainer">
-					<p class="parameter">Sample Rate: {freqSampleRate}</p>
-					<p class="parameter">Chunk Size: {freqChunkSize}</p>
-				</div>
-				<div>
-					<canvas class="canvas" bind:this={FreqDomainChart} id="FreqDomainChart" />
+				<div class="graphGroup">
+					<div class="parameterContainer">
+						<p class="parameter">Sample Rate: {freqSampleRate}</p>
+						<p class="parameter">Chunk Size: {freqChunkSize}</p>
+					</div>
+					<div>
+						<canvas class="canvas" bind:this={FreqDomainChart} id="FreqDomainChart" />
+					</div>
 				</div>
 			</div>
 		</div>
@@ -227,7 +237,7 @@
 	}
 
 	.sensorGroupTitle {
-		display: flex;
+		text-align: center;
 		width: 100%;
 		height: 10%;
 	}
@@ -254,6 +264,7 @@
 		width: 100%;
 	}
 	.parameter {
+		text-align: center;
 		max-width: 100%;
 		max-height: 100%;
 		width: 100%;
