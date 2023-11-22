@@ -196,7 +196,7 @@
 <div>
 	<!-- <div class="pageContainer"> -->
 	<div class="graphContainer">
-		<div>
+		<div class="graphGroup">
 			<div class="parameterContainer">
 				<p class="parameter">Sample Rate: {timeSampleRate}</p>
 				<p class="parameter">Chunk Size: {timeChunkSize}</p>
@@ -205,7 +205,7 @@
 				<canvas class="canvas" bind:this={TimeDomainChart} id="TimeDomainChart" />
 			</div>
 		</div>
-		<div>
+		<div class="graphGroup">
 			<div class="parameterContainer">
 				<p class="parameter">Sample Rate: {freqSampleRate}</p>
 				<p class="parameter">Chunk Size: {freqChunkSize}</p>
@@ -221,13 +221,14 @@
 <style>
 	.graphContainer {
 		display: flex;
-		flex-direction: column;
-		align-items: left;
-		max-height: 100%;
-		max-width: 100%;
+		flex-direction: row;
 		width: 100%;
 	}
 
+	.graphGroup {
+		width: 50%;
+		padding: 10px;
+	}
 	.canvas {
 		max-width: 100%; /* Set desired width for each canvas */
 		max-height: 100%;
