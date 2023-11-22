@@ -193,33 +193,49 @@
 </svelte:head>
 
 <div>
-	<div class="graphContainer">
-		<div class="graphGroup">
-			<div class="parameterContainer">
-				<p class="parameter">Sample Rate: {timeSampleRate}</p>
-				<p class="parameter">Chunk Size: {timeChunkSize}</p>
+	<div class-="sensorGroup">
+		<div class="sensorGroupTitle">TEst</div>
+		<div class="graphSuperGroup">
+			<div class="graphGroup">
+				<div class="parameterContainer">
+					<p class="parameter">Sample Rate: {timeSampleRate}</p>
+					<p class="parameter">Chunk Size: {timeChunkSize}</p>
+				</div>
+				<div>
+					<canvas class="canvas" bind:this={TimeDomainChart} id="TimeDomainChart" />
+				</div>
 			</div>
-			<div>
-				<canvas class="canvas" bind:this={TimeDomainChart} id="TimeDomainChart" />
-			</div>
-		</div>
-		<div class="graphGroup">
-			<div class="parameterContainer">
-				<p class="parameter">Sample Rate: {freqSampleRate}</p>
-				<p class="parameter">Chunk Size: {freqChunkSize}</p>
-			</div>
-			<div>
-				<canvas class="canvas" bind:this={FreqDomainChart} id="FreqDomainChart" />
+			<div class="graphGroup">
+				<div class="parameterContainer">
+					<p class="parameter">Sample Rate: {freqSampleRate}</p>
+					<p class="parameter">Chunk Size: {freqChunkSize}</p>
+				</div>
+				<div>
+					<canvas class="canvas" bind:this={FreqDomainChart} id="FreqDomainChart" />
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
 
 <style>
-	.graphContainer {
+	.sensorGroup {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		height: 100%;
+	}
+
+	.sensorGroupTitle {
+		display: flex;
+		width: 100%;
+		height: 10%;
+	}
+	.graphSuperGroup {
 		display: flex;
 		flex-direction: row;
 		width: 100%;
+		height: 90%;
 	}
 
 	.graphGroup {
