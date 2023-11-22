@@ -108,7 +108,7 @@
 				legend: { display: false },
 				animation: {
 					// Disable animations
-					duration: 0 // Set the duration to 0 for all animations
+					duration: 1 // Set the duration to 0 for all animations
 				}
 			}
 		});
@@ -177,7 +177,7 @@
 				legend: { display: false },
 				animation: {
 					// Disable animations
-					duration: 0 // Set the duration to 0 for all animations
+					duration: 1 // Set the duration to 0 for all animations
 				}
 			}
 		});
