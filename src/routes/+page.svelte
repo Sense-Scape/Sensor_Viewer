@@ -194,7 +194,6 @@
 </svelte:head>
 
 <div>
-	<!-- <div class="pageContainer"> -->
 	<div class="graphContainer">
 		<div class="graphGroup">
 			<div class="parameterContainer">
@@ -215,7 +214,6 @@
 			</div>
 		</div>
 	</div>
-	<!-- </div> -->
 </div>
 
 <style>
@@ -230,19 +228,18 @@
 		padding: 10px;
 	}
 	.canvas {
-		max-width: 100%; /* Set desired width for each canvas */
+		max-width: 100%;
 		max-height: 100%;
 		width: 100%;
 	}
 
 	.parameterContainer {
 		display: flex;
-		/* justify-content: space-between; */
 		flex-direction: row;
 		width: 100%;
 	}
 	.parameter {
-		max-width: 100%; /* Set desired width for each canvas */
+		max-width: 100%;
 		max-height: 100%;
 		width: 100%;
 	}
