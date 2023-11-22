@@ -1,20 +1,6 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import { onMount } from 'svelte';
-
-	// components
-	import AudioStream from '$lib/AudioStream.svelte';
-	import Card from '$lib/Card.svelte';
-
-	// stores
-	import { sampleRateStore } from '$lib/stores';
-
-	let sampleRate: number | null = null;
-
-	const unsubscribe = sampleRateStore.subscribe((value) => {
-		sampleRate = value;
-	});
 
 	// Setting up of time domain plot
 	let TimeDomainChart;
@@ -37,10 +23,10 @@
 	// and update the time domain plot
 	$: {
 		if (typeof window !== 'undefined') {
-			if (true) {
-				// First we try connect to the websocket and listen
-				// To the TimeChunk topic and start listening
-			}
+			// if (true) {
+			// First we try connect to the websocket and listen
+			// To the TimeChunk topic and start listening
+			// }
 		}
 	}
 
@@ -182,7 +168,6 @@
 			}
 		});
 	});
-	onDestroy(unsubscribe);
 </script>
 
 <svelte:head>
@@ -264,14 +249,6 @@
 		align-items: left;
 		max-height: 100%;
 		max-width: 10%;
-		width: 100%;
-	}
-	.pageContainer {
-		display: flex;
-		flex-direction: column;
-		align-items: left;
-		max-height: 100%;
-		max-width: 100%;
 		width: 100%;
 	}
 </style>
