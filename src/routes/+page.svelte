@@ -2,6 +2,7 @@
 	import Chart from 'chart.js/auto';
 	import SensorGroup from '$lib/SensorGroup.svelte';
 	import { onMount } from 'svelte';
+
 	// Setting up of time domain plot
 	// let TimeDomainChart;
 	// let TimeDomainYValues = [0];
@@ -19,14 +20,25 @@
 	// export let freqSampleRate = 'X';
 	// export let freqChunkSize = 'X';
 
-	let sensorGroup = [
+	// $: sensorGroup = [];
+
+	// Define your sensorGroup array
+	let sensorGroup: {
+		timeSampleRate: number;
+		timeChunkSize: number;
+		freqSampleRate: number;
+		freqChunkSize: number;
+	}[] = [
 		{
 			timeSampleRate: 1000,
 			timeChunkSize: 512,
-			FreqDomainChart: SensorGroup.InitialiseTimeGraph(),
-			TimeDomainChart: SensorGroup.InitialiseFreqGraph()
+			freqSampleRate: 1000,
+			freqChunkSize: 512
 		}
+		// Add more objects as needed for multiple SensorGroup components
+		// ...
 	];
+
 	// Callback function used to connect to the websocket, retrieve data
 	// and update the time domain plot
 	$: {
@@ -40,46 +52,60 @@
 
 	// Create the time domain chart and link mount it to the HTML canvas
 	onMount(() => {
-		// const TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
-		// let parsedData = null;
-		// let datasets = [];
-		// 	TimeWebSocket.addEventListener('message', async (event) => {
-		// 		// Check if parsed data exists, otherwise parse it once
-		// 		if (!parsedData) {
-		// 			const receivedMessage = event.data;
-		// 			parsedData = JSON.parse(receivedMessage);
-		// 			// Create datasets array
-		// 			const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
-		// 			for (
-		// 				let channelIndex = 0;
-		// 				channelIndex < parsedData['TimeChunk']['NumChannels'];
-		// 				channelIndex++
-		// 			) {
-		// 				const dataset = {
-		// 					labels: undefined,
-		// 					data: [],
-		// 					borderColor: colors[channelIndex],
-		// 					fill: false
-		// 				};
-		// 				datasets.push(dataset);
-		// 			}
-		// 		}
-		// 		const newData = JSON.parse(event.data)['TimeChunk']['Channels'];
-		// 		const numChannels = JSON.parse(event.data)['TimeChunk']['NumChannels'];
-		// 		for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-		// 			datasets[channelIndex].data = newData[channelIndex];
-		// 		}
-		// 		// Update chart data efficiently
-		// 		TimeDomainChart.data.datasets = datasets;
-		// 		TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
-		// 		TimeDomainChart.update();
-		// 		if (timeSampleRate !== JSON.parse(event.data)['TimeChunk']['SampleRate']) {
-		// 			timeSampleRate = JSON.parse(event.data)['TimeChunk']['SampleRate'];
-		// 		}
-		// 		if (timeChunkSize !== JSON.parse(event.data)['TimeChunk']['ChunkSize']) {
-		// 			timeChunkSize = JSON.parse(event.data)['TimeChunk']['ChunkSize'];
-		// 		}
-		// 	});
+		const TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
+		let parsedData = null;
+		let datasets = [];
+
+		// sensorGroup = [
+		// 	...sensorGroup,
+		// 	{
+		// 		timeSampleRate: 1000,
+		// 		timeChunkSize: 512,
+		// 		freqSampleRate: 1000,
+		// 		freqChunkSize: 512
+		// 	}
+		// ];
+
+		// console.log(sensorGroup);
+
+		TimeWebSocket.addEventListener('message', async (event) => {
+			// Check if parsed data exists, otherwise parse it once
+
+			if (!parsedData) {
+				const receivedMessage = event.data;
+				parsedData = JSON.parse(receivedMessage);
+				// Create datasets array
+				const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
+				for (
+					let channelIndex = 0;
+					channelIndex < parsedData['TimeChunk']['NumChannels'];
+					channelIndex++
+				) {
+					const dataset = {
+						labels: undefined,
+						data: [],
+						borderColor: colors[channelIndex],
+						fill: false
+					};
+					datasets.push(dataset);
+				}
+			}
+			// const newData = JSON.parse(event.data)['TimeChunk']['Channels'];
+			// const numChannels = JSON.parse(event.data)['TimeChunk']['NumChannels'];
+			// for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+			// 	datasets[channelIndex].data = newData[channelIndex];
+			// }
+			// // Update chart data efficiently
+			// TimeDomainChart.data.datasets = datasets;
+			// TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
+			// TimeDomainChart.update();
+			// if (timeSampleRate !== JSON.parse(event.data)['TimeChunk']['SampleRate']) {
+			// 	timeSampleRate = JSON.parse(event.data)['TimeChunk']['SampleRate'];
+			// }
+			// if (timeChunkSize !== JSON.parse(event.data)['TimeChunk']['ChunkSize']) {
+			// 	timeChunkSize = JSON.parse(event.data)['TimeChunk']['ChunkSize'];
+			// }
+		});
 		// 	const FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
 		// 	let FreqParsedData = null;
 		// 	let freqDatasets = [];
@@ -150,10 +176,11 @@
 </svelte:head>
 
 <div>
-	<div id="sensors" />
-	{#each sensorGroup as sensor}
-		<sensorGroup {...sensor} />
-	{/each}
+	<div id="sensors">
+		{#each sensorGroup as sensor}
+			<SensorGroup {...sensor} />
+		{/each}
+	</div>
 </div>
 
 <style>
