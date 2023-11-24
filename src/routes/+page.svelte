@@ -28,16 +28,7 @@
 		timeChunkSize: number;
 		freqSampleRate: number;
 		freqChunkSize: number;
-	}[] = [
-		{
-			timeSampleRate: 1000,
-			timeChunkSize: 512,
-			freqSampleRate: 1000,
-			freqChunkSize: 512
-		}
-		// Add more objects as needed for multiple SensorGroup components
-		// ...
-	];
+	}[] = [];
 
 	// Callback function used to connect to the websocket, retrieve data
 	// and update the time domain plot
@@ -55,16 +46,6 @@
 		const TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
 		let parsedData = null;
 		let datasets = [];
-
-		// sensorGroup = [
-		// 	...sensorGroup,
-		// 	{
-		// 		timeSampleRate: 1000,
-		// 		timeChunkSize: 512,
-		// 		freqSampleRate: 1000,
-		// 		freqChunkSize: 512
-		// 	}
-		// ];
 
 		// console.log(sensorGroup);
 
@@ -89,6 +70,19 @@
 					};
 					datasets.push(dataset);
 				}
+
+				console.log(parsedData['TimeChunk']['SourceIndentifier']);
+
+				sensorGroup = [
+					...sensorGroup,
+					{
+						timeSampleRate: JSON.parse(event.data)['TimeChunk']['SampleRate'],
+						timeChunkSize: JSON.parse(event.data)['TimeChunk']['ChunkSize'],
+						sourceIdentifier: JSON.parse(event.data)['TimeChunk']['SourceIndentifier'],
+						freqSampleRate: 1000,
+						freqChunkSize: 512
+					}
+				];
 			}
 			// const newData = JSON.parse(event.data)['TimeChunk']['Channels'];
 			// const numChannels = JSON.parse(event.data)['TimeChunk']['NumChannels'];

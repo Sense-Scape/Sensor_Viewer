@@ -6,6 +6,7 @@
 	export let timeChunkSize: number = -1;
 	export let freqSampleRate: number = -1;
 	export let freqChunkSize: number = -1;
+	export let sourceIdentifier: string = '-';
 
 	// export let TimeDomainChart;
 	// export let TimeDomainYValues = [0];
@@ -63,7 +64,7 @@
 </script>
 
 <div class-="sensorGroup">
-	<div class="sensorGroupTitle">Test</div>
+	<div class="sensorGroupTitle">Sensor ID: {sourceIdentifier}</div>
 	<div class="graphSuperGroup">
 		<div class="graphGroup">
 			<div class="parameterContainer">
