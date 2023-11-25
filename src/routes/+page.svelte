@@ -29,6 +29,7 @@
 	sensorGroup.subscribe((map) => {
 		items = Object.entries(map).map(([key, value]) => ({ key, value }));
 	});
+
 	// Function to add an item to the "map"
 	function updateItemInMap(key, value) {
 		sensorGroup.update((map) => {
@@ -36,7 +37,7 @@
 		});
 	}
 
-	// Fucntion to return data map
+	// Function to return data map
 	function getItemFromMap(key) {
 		let value;
 		sensorGroup.subscribe((map) => {
@@ -72,9 +73,11 @@
 		let datasets = [];
 
 		// console.log(sensorGroup);
+		console.log('here');
 
 		TimeWebSocket.addEventListener('message', async (event) => {
 			// Check if parsed data exists, otherwise parse it once
+			console.log('here1');
 
 			if (!parsedData) {
 				const receivedMessage = event.data;
@@ -98,22 +101,18 @@
 				console.log(parsedData['TimeChunk']['SourceIndentifier']);
 			}
 
+			console.log('here');
+
 			// Lets try get the source identifier key
 			let sourceIdentifierKey = JSON.parse(event.data)['TimeChunk']['SourceIndentifier'];
 			// Check if we are tracking it in the mpa already
-			if (!getItemFromMap(sourceIdentifierKey)) {
-				// And if not then track it
-				console.log('Adding');
-				updateItemInMap(JSON.parse(event.data)['TimeChunk']['SourceIndentifier'], {
-					timeSampleRate: JSON.parse(event.data)['TimeChunk']['SampleRate'],
-					timeChunkSize: JSON.parse(event.data)['TimeChunk']['ChunkSize'],
-					sourceIdentifier: JSON.parse(event.data)['TimeChunk']['SourceIndentifier']
-				});
+			// And if not then track it
+			updateItemInMap(JSON.parse(event.data)['TimeChunk']['SourceIndentifier'], {
+				timeSampleRate: JSON.parse(event.data)['TimeChunk']['SampleRate'],
+				timeChunkSize: JSON.parse(event.data)['TimeChunk']['ChunkSize'],
+				sourceIdentifier: JSON.parse(event.data)['TimeChunk']['SourceIndentifier']
+			});
 
-				console.log(getItemFromMap(sourceIdentifierKey));
-			}
-
-			// const newData = JSON.parse(event.data)['TimeChunk']['Channels'];
 			// const numChannels = JSON.parse(event.data)['TimeChunk']['NumChannels'];
 			// for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 			// 	datasets[channelIndex].data = newData[channelIndex];

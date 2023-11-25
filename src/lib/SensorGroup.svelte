@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Chart from 'chart.js/auto';
+	import { onMount } from 'svelte';
 
 	// Define the props expected by SensorGroup
 	export let timeSampleRate: number = -1;
@@ -8,59 +9,69 @@
 	export let freqChunkSize: number = -1;
 	export let sourceIdentifier: string = '-';
 
-	// export let TimeDomainChart;
-	// export let TimeDomainYValues = [0];
-	// export let TimeDomainXValues = [0];
-	// export let ctxTime;
+	let ctxTime;
+	let TimeDomainChart;
+	let TimeDomainYValues = [0];
+	let TimeDomainXValues = [0];
 
-	// export let FreqDomainChart;
-	// export let FreqDomainYValues = [0];
-	// export let FreqDomainXValues = [0];
-	// export let ctxFreq;
+	let ctxFreq;
+	let FreqDomainChart;
+	let FreqDomainYValues = [0];
+	let FreqDomainXValues = [0];
 
 	// export function InitialiseTimeGraph() {
-	// 	return (TimeDomainChart = new Chart(ctxTime, {
-	// 		type: 'line',
-	// 		data: {
-	// 			labels: TimeDomainXValues,
-	// 			datasets: [
-	// 				{
-	// 					data: TimeDomainYValues,
-	// 					borderColor: 'red',
-	// 					fill: false
-	// 				}
-	// 			]
-	// 		},
-	// 		options: {
-	// 			legend: { display: false },
-	// 			animation: {
-	// 				// Disable animations
-	// 				duration: 1 // Set the duration to 0 for all animations
-	// 			}
-	// 		}
-	// 	}));
-	// }
-	// export function InitialiseFreqGraph() {
-	// 	return (FreqDomainChart = new Chart(ctxFreq, {
-	// 		type: 'line',
-	// 		data: {
-	// 			labels: FreqDomainXValues,
-	// 			datasets: [
-	// 				{
-	// 					data: FreqDomainYValues,
-	// 					borderColor: 'red',
-	// 					fill: false
-	// 				}
-	// 			]
-	// 		},
-	// 		options: {
-	// 			legend: { display: false },
-	// 			animation: {
-	// 				duration: 1
-	// 			}
-	// 		}
-	// 	}));
-	// }
+
+	function initTimeCanvas() {
+		ctxTime = document.getElementById('TimeDomainChart');
+		TimeDomainChart = new Chart(ctxTime, {
+			type: 'line',
+			data: {
+				labels: TimeDomainXValues,
+				datasets: [
+					{
+						data: TimeDomainYValues,
+						borderColor: 'red',
+						fill: false
+					}
+				]
+			},
+			options: {
+				legend: { display: false },
+				animation: {
+					// Disable animations
+					duration: 1 // Set the duration to 0 for all animations
+				}
+			}
+		});
+	}
+
+	function initFreqCanvas() {
+		ctxFreq = document.getElementById('FreqDomainChart');
+		FreqDomainChart = new Chart(ctxFreq, {
+			type: 'line',
+			data: {
+				labels: FreqDomainXValues,
+				datasets: [
+					{
+						data: FreqDomainYValues,
+						borderColor: 'red',
+						fill: false
+					}
+				]
+			},
+			options: {
+				legend: { display: false },
+				animation: {
+					duration: 1
+				}
+			}
+		});
+	}
+
+	onMount(() => {
+		initFreqCanvas();
+		initTimeCanvas();
+	});
 </script>
 
 <div class-="sensorGroup">
@@ -71,18 +82,18 @@
 				<p class="parameter">Sample Rate: {timeSampleRate}</p>
 				<p class="parameter">Chunk Size: {timeChunkSize}</p>
 			</div>
-			<!-- <div>
+			<div>
 				<canvas class="canvas" bind:this={TimeDomainChart} id="TimeDomainChart" />
-			</div> -->
+			</div>
 		</div>
 		<div class="graphGroup">
 			<div class="parameterContainer">
 				<p class="parameter">Sample Rate: {freqSampleRate}</p>
 				<p class="parameter">Chunk Size: {freqChunkSize}</p>
 			</div>
-			<!-- <div>
+			<div>
 				<canvas class="canvas" bind:this={FreqDomainChart} id="FreqDomainChart" />
-			</div> -->
+			</div>
 		</div>
 	</div>
 </div>
