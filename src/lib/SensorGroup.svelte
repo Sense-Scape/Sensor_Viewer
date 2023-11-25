@@ -12,7 +12,7 @@
 	let ctxTime;
 	let TimeDomainChart;
 	export let TimeDomainYValues = [0];
-	let TimeDomainXValues = [0];
+	export let TimeDomainXValues = [0];
 
 	let ctxFreq;
 	let FreqDomainChart;
@@ -78,9 +78,9 @@
 	function updatePlot() {
 		// Update chart data efficiently
 		if (ctxTime) {
-			console.log(TimeDomainChart);
+			console.log(TimeDomainYValues);
 			TimeDomainChart.data.datasets.data = TimeDomainYValues;
-			TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
+			TimeDomainChart.data.labels = TimeDomainXValues;
 			TimeDomainChart.update();
 		}
 	}

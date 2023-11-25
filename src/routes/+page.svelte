@@ -73,38 +73,14 @@
 		let datasets = [];
 
 		// console.log(sensorGroup);
-		console.log('here');
+		console.log('here-');
 
 		TimeWebSocket.addEventListener('message', async (event) => {
-			// Check if parsed data exists, otherwise parse it once
-			console.log('here1');
-
-			// if (!parsedData) {
 			const receivedMessage = event.data;
 
-			// 	// Create datasets array
-			// 	const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
-			// 	for (
-			// 		let channelIndex = 0;
-			// 		channelIndex < parsedData['TimeChunk']['NumChannels'];
-			// 		channelIndex++
-			// 	) {
-			// 		const dataset = {
-			// 			labels: undefined,
-			// 			data: [],
-			// 			borderColor: colors[channelIndex],
-			// 			fill: false
-			// 		};
-			// 		datasets.push(dataset);
-			// 	}
-
-			// 	console.log(parsedData['TimeChunk']['SourceIndentifier']);
-			// }
 			parsedData = JSON.parse(receivedMessage);
-			console.log('here');
+			console.log(parsedData);
 
-			// Lets try get the source identifier key
-			let sourceIdentifierKey = JSON.parse(event.data)['TimeChunk']['SourceIndentifier'];
 			// Check if we are tracking it in the mpa already
 			// And if not then track it
 			const newData = JSON.parse(event.data)['TimeChunk']['Channels'];
@@ -117,50 +93,52 @@
 				timeSampleRate: JSON.parse(event.data)['TimeChunk']['SampleRate'],
 				timeChunkSize: JSON.parse(event.data)['TimeChunk']['ChunkSize'],
 				sourceIdentifier: JSON.parse(event.data)['TimeChunk']['SourceIndentifier'],
-				TimeDomainYValues: datasets
+				TimeDomainYValues: datasets,
+				TimeDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1)
 			});
 		});
-		// 	const FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
-		// 	let FreqParsedData = null;
-		// 	let freqDatasets = [];
-		// 	FreqWebSocket.addEventListener('message', async (event) => {
-		// 		// Check if parsed data exists, otherwise parse it once
-		// 		if (!FreqParsedData) {
-		// 			const receivedMessage = event.data;
-		// 			FreqParsedData = JSON.parse(receivedMessage);
-		// 			// Create datasets array
-		// 			const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
-		// 			for (
-		// 				let channelIndex = 0;
-		// 				channelIndex < FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
-		// 				channelIndex++
-		// 			) {
-		// 				const dataset = {
-		// 					labels: undefined,
-		// 					data: [],
-		// 					borderColor: colors[channelIndex],
-		// 					fill: false
-		// 				};
-		// 				freqDatasets.push(dataset);
-		// 			}
-		// 		}
-		// 		// Update datasets with new data
-		// 		const newData = JSON.parse(event.data)['FFTMagnitudeChunk']['Channels'];
-		// 		const numChannels = JSON.parse(event.data)['FFTMagnitudeChunk']['NumChannels'];
-		// 		for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-		// 			freqDatasets[channelIndex].data = newData[channelIndex];
-		// 		}
-		// 		// Update chart data efficiently
-		// 		FreqDomainChart.data.datasets = freqDatasets;
-		// 		FreqDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
-		// 		FreqDomainChart.update();
-		// 		if (freqSampleRate !== JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate']) {
-		// 			freqSampleRate = JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate'];
-		// 		}
-		// 		if (freqChunkSize !== JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize']) {
-		// 			freqChunkSize = JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize'];
-		// 		}
-		//});
+
+		const FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
+		let FreqParsedData = null;
+		let freqDatasets = [];
+		FreqWebSocket.addEventListener('message', async (event) => {
+			// Check if parsed data exists, otherwise parse it once
+			if (!FreqParsedData) {
+				const receivedMessage = event.data;
+				FreqParsedData = JSON.parse(receivedMessage);
+				// Create datasets array
+				const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
+				for (
+					let channelIndex = 0;
+					channelIndex < FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
+					channelIndex++
+				) {
+					const dataset = {
+						labels: undefined,
+						data: [],
+						borderColor: colors[channelIndex],
+						fill: false
+					};
+					freqDatasets.push(dataset);
+				}
+			}
+			// Update datasets with new data
+			// const newData = JSON.parse(event.data)['FFTMagnitudeChunk']['Channels'];
+			// const numChannels = JSON.parse(event.data)['FFTMagnitudeChunk']['NumChannels'];
+			// for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+			// 	freqDatasets[channelIndex].data = newData[channelIndex];
+			// }
+			// // Update chart data efficiently
+			// FreqDomainChart.data.datasets = freqDatasets;
+			// FreqDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
+			// FreqDomainChart.update();
+			// if (freqSampleRate !== JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate']) {
+			// 	freqSampleRate = JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate'];
+			// }
+			// if (freqChunkSize !== JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize']) {
+			// 	freqChunkSize = JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize'];
+			// }
+		});
 	});
 
 	// function UpdateGraphGroup(numChannel, channelData, sampleRate, chunkSize) {}
