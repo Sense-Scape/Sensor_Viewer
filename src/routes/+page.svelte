@@ -2,7 +2,7 @@
 	import Chart from 'chart.js/auto';
 	import SensorGroup from '$lib/SensorGroup.svelte';
 	import { onMount } from 'svelte';
-
+	import { writable } from 'svelte/store';
 	// Setting up of time domain plot
 	// let TimeDomainChart;
 	// let TimeDomainYValues = [0];
@@ -22,13 +22,37 @@
 
 	// $: sensorGroup = [];
 
-	// Define your sensorGroup array
-	let sensorGroup: {
-		timeSampleRate: number;
-		timeChunkSize: number;
-		freqSampleRate: number;
-		freqChunkSize: number;
-	}[] = [];
+	// Create a writable store initialized as an empty object (to mimic a map)
+	const sensorGroup = writable({});
+	let items = [];
+	// Subscribe to changes in the writable map and update the items array
+	sensorGroup.subscribe((map) => {
+		items = Object.entries(map).map(([key, value]) => ({ key, value }));
+	});
+	// Function to add an item to the "map"
+	function updateItemInMap(key, value) {
+		sensorGroup.update((map) => {
+			return { ...map, [key]: value };
+		});
+	}
+
+	// Fucntion to return data map
+	function getItemFromMap(key) {
+		let value;
+		sensorGroup.subscribe((map) => {
+			value = map[key];
+		})();
+		return value;
+	}
+
+	// Function to convert the writable map content into an array of objects
+	function mapToArrayOfObjects() {
+		let result = [];
+		sensorGroup.subscribe((map) => {
+			result = Object.entries(map).map(([key, value]) => ({ key, value }));
+		})();
+		return result;
+	}
 
 	// Callback function used to connect to the websocket, retrieve data
 	// and update the time domain plot
@@ -72,18 +96,23 @@
 				}
 
 				console.log(parsedData['TimeChunk']['SourceIndentifier']);
-
-				sensorGroup = [
-					...sensorGroup,
-					{
-						timeSampleRate: JSON.parse(event.data)['TimeChunk']['SampleRate'],
-						timeChunkSize: JSON.parse(event.data)['TimeChunk']['ChunkSize'],
-						sourceIdentifier: JSON.parse(event.data)['TimeChunk']['SourceIndentifier'],
-						freqSampleRate: 1000,
-						freqChunkSize: 512
-					}
-				];
 			}
+
+			// Lets try get the source identifier key
+			let sourceIdentifierKey = JSON.parse(event.data)['TimeChunk']['SourceIndentifier'];
+			// Check if we are tracking it in the mpa already
+			if (!getItemFromMap(sourceIdentifierKey)) {
+				// And if not then track it
+				console.log('Adding');
+				updateItemInMap(JSON.parse(event.data)['TimeChunk']['SourceIndentifier'], {
+					timeSampleRate: JSON.parse(event.data)['TimeChunk']['SampleRate'],
+					timeChunkSize: JSON.parse(event.data)['TimeChunk']['ChunkSize'],
+					sourceIdentifier: JSON.parse(event.data)['TimeChunk']['SourceIndentifier']
+				});
+
+				console.log(getItemFromMap(sourceIdentifierKey));
+			}
+
 			// const newData = JSON.parse(event.data)['TimeChunk']['Channels'];
 			// const numChannels = JSON.parse(event.data)['TimeChunk']['NumChannels'];
 			// for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
@@ -171,8 +200,8 @@
 
 <div>
 	<div id="sensors">
-		{#each sensorGroup as sensor}
-			<SensorGroup {...sensor} />
+		{#each items as { key, value }}
+			<SensorGroup {...value} />
 		{/each}
 	</div>
 </div>
