@@ -79,54 +79,46 @@
 			// Check if parsed data exists, otherwise parse it once
 			console.log('here1');
 
-			if (!parsedData) {
-				const receivedMessage = event.data;
-				parsedData = JSON.parse(receivedMessage);
-				// Create datasets array
-				const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
-				for (
-					let channelIndex = 0;
-					channelIndex < parsedData['TimeChunk']['NumChannels'];
-					channelIndex++
-				) {
-					const dataset = {
-						labels: undefined,
-						data: [],
-						borderColor: colors[channelIndex],
-						fill: false
-					};
-					datasets.push(dataset);
-				}
+			// if (!parsedData) {
+			const receivedMessage = event.data;
 
-				console.log(parsedData['TimeChunk']['SourceIndentifier']);
-			}
+			// 	// Create datasets array
+			// 	const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
+			// 	for (
+			// 		let channelIndex = 0;
+			// 		channelIndex < parsedData['TimeChunk']['NumChannels'];
+			// 		channelIndex++
+			// 	) {
+			// 		const dataset = {
+			// 			labels: undefined,
+			// 			data: [],
+			// 			borderColor: colors[channelIndex],
+			// 			fill: false
+			// 		};
+			// 		datasets.push(dataset);
+			// 	}
 
+			// 	console.log(parsedData['TimeChunk']['SourceIndentifier']);
+			// }
+			parsedData = JSON.parse(receivedMessage);
 			console.log('here');
 
 			// Lets try get the source identifier key
 			let sourceIdentifierKey = JSON.parse(event.data)['TimeChunk']['SourceIndentifier'];
 			// Check if we are tracking it in the mpa already
 			// And if not then track it
+			const newData = JSON.parse(event.data)['TimeChunk']['Channels'];
+			const numChannels = JSON.parse(event.data)['TimeChunk']['NumChannels'];
+			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+				datasets[channelIndex] = newData[channelIndex];
+			}
+
 			updateItemInMap(JSON.parse(event.data)['TimeChunk']['SourceIndentifier'], {
 				timeSampleRate: JSON.parse(event.data)['TimeChunk']['SampleRate'],
 				timeChunkSize: JSON.parse(event.data)['TimeChunk']['ChunkSize'],
-				sourceIdentifier: JSON.parse(event.data)['TimeChunk']['SourceIndentifier']
+				sourceIdentifier: JSON.parse(event.data)['TimeChunk']['SourceIndentifier'],
+				TimeDomainYValues: datasets
 			});
-
-			// const numChannels = JSON.parse(event.data)['TimeChunk']['NumChannels'];
-			// for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-			// 	datasets[channelIndex].data = newData[channelIndex];
-			// }
-			// // Update chart data efficiently
-			// TimeDomainChart.data.datasets = datasets;
-			// TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
-			// TimeDomainChart.update();
-			// if (timeSampleRate !== JSON.parse(event.data)['TimeChunk']['SampleRate']) {
-			// 	timeSampleRate = JSON.parse(event.data)['TimeChunk']['SampleRate'];
-			// }
-			// if (timeChunkSize !== JSON.parse(event.data)['TimeChunk']['ChunkSize']) {
-			// 	timeChunkSize = JSON.parse(event.data)['TimeChunk']['ChunkSize'];
-			// }
 		});
 		// 	const FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
 		// 	let FreqParsedData = null;

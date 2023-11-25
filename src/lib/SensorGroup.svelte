@@ -11,15 +11,13 @@
 
 	let ctxTime;
 	let TimeDomainChart;
-	let TimeDomainYValues = [0];
+	export let TimeDomainYValues = [0];
 	let TimeDomainXValues = [0];
 
 	let ctxFreq;
 	let FreqDomainChart;
 	let FreqDomainYValues = [0];
 	let FreqDomainXValues = [0];
-
-	// export function InitialiseTimeGraph() {
 
 	function initTimeCanvas() {
 		ctxTime = document.getElementById('TimeDomainChart');
@@ -43,6 +41,8 @@
 				}
 			}
 		});
+
+		console.log(TimeDomainChart);
 	}
 
 	function initFreqCanvas() {
@@ -69,9 +69,22 @@
 	}
 
 	onMount(() => {
+		console.log('00000');
 		initFreqCanvas();
 		initTimeCanvas();
 	});
+
+	// Reactive statement to watch 'data' changes and update the plot
+	function updatePlot() {
+		// Update chart data efficiently
+		if (ctxTime) {
+			console.log(TimeDomainChart);
+			TimeDomainChart.data.datasets.data = TimeDomainYValues;
+			TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
+			TimeDomainChart.update();
+		}
+	}
+	$: updatePlot();
 </script>
 
 <div class-="sensorGroup">
