@@ -37,12 +37,10 @@
 				legend: { display: false },
 				animation: {
 					// Disable animations
-					duration: 1 // Set the duration to 0 for all animations
+					duration: 2 // Set the duration to 0 for all animations
 				}
 			}
 		});
-
-		console.log(TimeDomainChart);
 	}
 
 	function initFreqCanvas() {
@@ -69,22 +67,37 @@
 	}
 
 	onMount(() => {
-		console.log('00000');
 		initFreqCanvas();
 		initTimeCanvas();
 	});
 
 	// Reactive statement to watch 'data' changes and update the plot
 	function updatePlot() {
+		console.log('1');
 		// Update chart data efficiently
 		if (ctxTime) {
+			let datasets = new Array();
+			const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
+
+			let numChannels = TimeDomainYValues.length;
 			console.log(TimeDomainYValues);
-			TimeDomainChart.data.datasets.data = TimeDomainYValues;
-			TimeDomainChart.data.labels = TimeDomainXValues;
+			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+				datasets.push({
+					data: TimeDomainYValues[channelIndex],
+					borderColor: colors[channelIndex],
+					fill: false
+				});
+			}
+
+			TimeDomainChart.data.datasets = datasets;
 			TimeDomainChart.update();
 		}
 	}
-	$: updatePlot();
+	$: {
+		console.log(TimeDomainYValues);
+		updatePlot();
+	}
+	// $: updatePlot();
 </script>
 
 <div class-="sensorGroup">

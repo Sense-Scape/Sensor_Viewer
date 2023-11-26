@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Chart from 'chart.js/auto';
 	import SensorGroup from '$lib/SensorGroup.svelte';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
@@ -24,10 +23,19 @@
 
 	// Create a writable store initialized as an empty object (to mimic a map)
 	const sensorGroup = writable({});
-	let items = [];
+	$: items = [];
 	// Subscribe to changes in the writable map and update the items array
 	sensorGroup.subscribe((map) => {
-		items = Object.entries(map).map(([key, value]) => ({ key, value }));
+		Object.entries(map).forEach(([key, value]) => {
+			const existingIndex = items.findIndex((item) => item.key === key);
+			if (existingIndex !== -1) {
+				// Update value if key exists
+				items[existingIndex].value = value;
+			} else {
+				// Add new entry if key doesn't exist
+				items.push({ key, value });
+			}
+		});
 	});
 
 	// Function to add an item to the "map"
@@ -37,34 +45,11 @@
 		});
 	}
 
-	// Function to return data map
-	function getItemFromMap(key) {
-		let value;
-		sensorGroup.subscribe((map) => {
-			value = map[key];
-		})();
-		return value;
-	}
-
-	// Function to convert the writable map content into an array of objects
-	function mapToArrayOfObjects() {
-		let result = [];
-		sensorGroup.subscribe((map) => {
-			result = Object.entries(map).map(([key, value]) => ({ key, value }));
-		})();
-		return result;
-	}
-
 	// Callback function used to connect to the websocket, retrieve data
 	// and update the time domain plot
-	$: {
-		if (typeof window !== 'undefined') {
-			// if (true) {
-			// First we try connect to the websocket and listen
-			// To the TimeChunk topic and start listening
-			// }
-		}
-	}
+	// $: {
+	// 	console.log(items);
+	// }
 
 	// Create the time domain chart and link mount it to the HTML canvas
 	onMount(() => {
@@ -77,9 +62,7 @@
 
 		TimeWebSocket.addEventListener('message', async (event) => {
 			const receivedMessage = event.data;
-
 			parsedData = JSON.parse(receivedMessage);
-			console.log(parsedData);
 
 			// Check if we are tracking it in the mpa already
 			// And if not then track it
