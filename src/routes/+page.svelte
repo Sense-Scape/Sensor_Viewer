@@ -3,24 +3,6 @@
 	import SensorGroup from '$lib/SensorGroup.svelte';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
-	// Setting up of time domain plot
-	// let TimeDomainChart;
-	// let TimeDomainYValues = [0];
-	// let TimeDomainXValues = [0];
-	// let ctxTime;
-
-	// export let timeSampleRate = 'X';
-	// export let timeChunkSize = 'X';
-
-	// let FreqDomainChart;
-	// let FreqDomainYValues = [0];
-	// let FreqDomainXValues = [0];
-	// let ctxFreq;
-
-	// export let freqSampleRate = 'X';
-	// export let freqChunkSize = 'X';
-
-	// $: sensorGroup = [];
 
 	// Create a writable store initialized as an empty object (to mimic a map)
 	const sensorGroup = writable({});
@@ -35,24 +17,6 @@
 		sensorGroup.update((map) => {
 			return { ...map, [key]: value };
 		});
-	}
-
-	// Function to return data map
-	function getItemFromMap(key) {
-		let value;
-		sensorGroup.subscribe((map) => {
-			value = map[key];
-		})();
-		return value;
-	}
-
-	// Function to convert the writable map content into an array of objects
-	function mapToArrayOfObjects() {
-		let result = [];
-		sensorGroup.subscribe((map) => {
-			result = Object.entries(map).map(([key, value]) => ({ key, value }));
-		})();
-		return result;
 	}
 
 	// Callback function used to connect to the websocket, retrieve data
@@ -73,13 +37,9 @@
 		let datasets = [];
 
 		// console.log(sensorGroup);
-		console.log('here-');
-
 		TimeWebSocket.addEventListener('message', async (event) => {
 			const receivedMessage = event.data;
-
 			parsedData = JSON.parse(receivedMessage);
-			console.log(parsedData);
 
 			// Check if we are tracking it in the mpa already
 			// And if not then track it
@@ -102,42 +62,24 @@
 		let FreqParsedData = null;
 		let freqDatasets = [];
 		FreqWebSocket.addEventListener('message', async (event) => {
-			// Check if parsed data exists, otherwise parse it once
-			if (!FreqParsedData) {
-				const receivedMessage = event.data;
-				FreqParsedData = JSON.parse(receivedMessage);
-				// Create datasets array
-				const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
-				for (
-					let channelIndex = 0;
-					channelIndex < FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
-					channelIndex++
-				) {
-					const dataset = {
-						labels: undefined,
-						data: [],
-						borderColor: colors[channelIndex],
-						fill: false
-					};
-					freqDatasets.push(dataset);
-				}
+			const receivedMessage = event.data;
+			parsedData = JSON.parse(receivedMessage);
+
+			// Check if we are tracking it in the mpa already
+			// And if not then track it
+			const newData = JSON.parse(event.data)['FFTMagnitudeChunk']['Channels'];
+			const numChannels = JSON.parse(event.data)['FFTMagnitudeChunk']['NumChannels'];
+			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+				datasets[channelIndex] = newData[channelIndex];
 			}
-			// Update datasets with new data
-			// const newData = JSON.parse(event.data)['FFTMagnitudeChunk']['Channels'];
-			// const numChannels = JSON.parse(event.data)['FFTMagnitudeChunk']['NumChannels'];
-			// for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-			// 	freqDatasets[channelIndex].data = newData[channelIndex];
-			// }
-			// // Update chart data efficiently
-			// FreqDomainChart.data.datasets = freqDatasets;
-			// FreqDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
-			// FreqDomainChart.update();
-			// if (freqSampleRate !== JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate']) {
-			// 	freqSampleRate = JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate'];
-			// }
-			// if (freqChunkSize !== JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize']) {
-			// 	freqChunkSize = JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize'];
-			// }
+
+			updateItemInMap(JSON.parse(event.data)['FFTMagnitudeChunk']['SourceIndentifier'], {
+				timeSampleRate: JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate'],
+				timeChunkSize: JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize'],
+				sourceIdentifier: JSON.parse(event.data)['FFTMagnitudeChunk']['SourceIndentifier'],
+				TimeDomainYValues: datasets,
+				TimeDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1)
+			});
 		});
 	});
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Chart from 'chart.js/auto';
 	import { onMount } from 'svelte';
+	import { writable } from 'svelte/store';
 
 	// Define the props expected by SensorGroup
 	export let timeSampleRate: number = -1;
@@ -11,13 +12,13 @@
 
 	let ctxTime;
 	let TimeDomainChart;
-	export let TimeDomainYValues = [0];
+	export let TimeDomainYValues = [];
 	export let TimeDomainXValues = [0];
 
 	let ctxFreq;
 	let FreqDomainChart;
-	let FreqDomainYValues = [0];
-	let FreqDomainXValues = [0];
+	export let FreqDomainYValues = [0];
+	export let FreqDomainXValues = [0];
 
 	function initTimeCanvas() {
 		ctxTime = document.getElementById('TimeDomainChart');
@@ -69,22 +70,43 @@
 	}
 
 	onMount(() => {
-		console.log('00000');
-		initFreqCanvas();
 		initTimeCanvas();
+		initFreqCanvas();
 	});
 
-	// Reactive statement to watch 'data' changes and update the plot
-	function updatePlot() {
-		// Update chart data efficiently
+	$: {
+		const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
+
 		if (ctxTime) {
-			console.log(TimeDomainYValues);
-			TimeDomainChart.data.datasets.data = TimeDomainYValues;
+			let timeDatasets = [];
+			const numChannels = TimeDomainYValues.length;
+			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+				timeDatasets.push({
+					data: TimeDomainYValues[channelIndex],
+					borderColor: colors[channelIndex],
+					fill: false
+				});
+			}
+			TimeDomainChart.data.datasets = timeDatasets;
 			TimeDomainChart.data.labels = TimeDomainXValues;
 			TimeDomainChart.update();
 		}
+
+		if (ctxFreq) {
+			let freqDatasets = [];
+			const numChannels = FreqDomainYValues.length;
+			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+				freqDatasets.push({
+					data: FreqDomainYValues[channelIndex],
+					borderColor: colors[channelIndex],
+					fill: false
+				});
+			}
+			FreqDomainChart.data.datasets = freqDatasets;
+			FreqDomainChart.data.labels = TimeDomainXValues;
+			FreqDomainChart.update();
+		}
 	}
-	$: updatePlot();
 </script>
 
 <div class-="sensorGroup">
