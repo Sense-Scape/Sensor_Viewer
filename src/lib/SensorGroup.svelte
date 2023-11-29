@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" defer>
 	import Chart from 'chart.js/auto';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
@@ -10,18 +10,21 @@
 	export let freqChunkSize: number = -1;
 	export let sourceIdentifier: string = '-';
 
-	let ctxTime;
-	let TimeDomainChart;
-	export let TimeDomainYValues = [];
-	export let TimeDomainXValues = [0];
+	let ctxTime: HTMLElement;
+	let TimeDomainChart: Chart;
+	export let TimeDomainYValues: number[][] = [];
+	export let TimeDomainXValues: number[] = [];
+	export let timeID;
 
-	let ctxFreq;
-	let FreqDomainChart;
-	export let FreqDomainYValues = [0];
-	export let FreqDomainXValues = [0];
+	let ctxFreq: HTMLElement;
+	let FreqDomainChart: Chart;
+	export let FreqDomainYValues: number[][] = [];
+	export let FreqDomainXValues: number[] = [];
+	export let freqID;
 
 	function initTimeCanvas() {
-		ctxTime = document.getElementById('TimeDomainChart');
+		ctxTime = document.getElementById(timeID + '-time').getContext('2d');
+
 		TimeDomainChart = new Chart(ctxTime, {
 			type: 'line',
 			data: {
@@ -42,12 +45,11 @@
 				}
 			}
 		});
-
-		console.log(TimeDomainChart);
 	}
 
 	function initFreqCanvas() {
-		ctxFreq = document.getElementById('FreqDomainChart');
+		ctxFreq = document.getElementById(freqID + '-freq');
+
 		FreqDomainChart = new Chart(ctxFreq, {
 			type: 'line',
 			data: {
@@ -70,14 +72,16 @@
 	}
 
 	onMount(() => {
-		initTimeCanvas();
 		initFreqCanvas();
 	});
 
 	$: {
+		console.log('TimeDoll');
+
 		const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
 
 		if (ctxTime) {
+			console.log('time');
 			let timeDatasets = [];
 			const numChannels = TimeDomainYValues.length;
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
@@ -93,6 +97,7 @@
 		}
 
 		if (ctxFreq) {
+			console.log('freq');
 			let freqDatasets = [];
 			const numChannels = FreqDomainYValues.length;
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
@@ -103,7 +108,7 @@
 				});
 			}
 			FreqDomainChart.data.datasets = freqDatasets;
-			FreqDomainChart.data.labels = TimeDomainXValues;
+			FreqDomainChart.data.labels = FreqDomainXValues;
 			FreqDomainChart.update();
 		}
 	}
@@ -118,7 +123,7 @@
 				<p class="parameter">Chunk Size: {timeChunkSize}</p>
 			</div>
 			<div>
-				<canvas class="canvas" bind:this={TimeDomainChart} id="TimeDomainChart" />
+				<canvas class="canvas" id={timeID} bind:this={TimeDomainChart} on:load={initTimeCanvas} />
 			</div>
 		</div>
 		<div class="graphGroup">
@@ -127,7 +132,7 @@
 				<p class="parameter">Chunk Size: {freqChunkSize}</p>
 			</div>
 			<div>
-				<canvas class="canvas" bind:this={FreqDomainChart} id="FreqDomainChart" />
+				<canvas class="canvas" id={freqID} bind:this={FreqDomainChart} on:load={initFreqCanvas} />
 			</div>
 		</div>
 	</div>
