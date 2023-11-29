@@ -21,9 +21,6 @@
 				break;
 			}
 		}
-		console.log('VV');
-		console.log(key);
-		console.log(index);
 		if (index !== -1) {
 			// Update the existing item
 			let a = Object.assign(mapData[index].value, value);
@@ -55,14 +52,14 @@
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 				timeDatasets[channelIndex] = newData[channelIndex];
 			}
-
-			updateItemInMap(JSON.parse(event.data)['TimeChunk']['SourceIdentifier'], {
+			updateItemInMap(JSON.parse(event.data)['TimeChunk']['SourceIndentifier'], {
 				timeSampleRate: JSON.parse(event.data)['TimeChunk']['SampleRate'],
 				timeChunkSize: JSON.parse(event.data)['TimeChunk']['ChunkSize'],
-				sourceIdentifier: JSON.parse(event.data)['TimeChunk']['SourceIdentifier'],
+				sourceIdentifier: JSON.parse(event.data)['TimeChunk']['SourceIndentifier'],
 				TimeDomainYValues: timeDatasets,
 				TimeDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1),
-				timeID: JSON.stringify(JSON.parse(event.data)['TimeChunk']['SourceIdentifier']) + '-time'
+				timeID: JSON.parse(event.data)['TimeChunk']['SourceIndentifier'] + '-time',
+				freqID: JSON.parse(event.data)['TimeChunk']['SourceIndentifier'] + '-freq'
 			});
 		});
 
@@ -80,16 +77,14 @@
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 				freqDatasets[channelIndex] = newData[channelIndex];
 			}
-			console.log('---');
-			console.log(JSON.parse(event.data));
-			updateItemInMap(JSON.parse(event.data)['FFTMagnitudeChunk']['SourceIdentifier'], {
+			updateItemInMap(JSON.parse(event.data)['FFTMagnitudeChunk']['SourceIndentifier'], {
 				freqSampleRate: JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate'],
 				freqChunkSize: JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize'],
-				sourceIdentifier: JSON.parse(event.data)['FFTMagnitudeChunk']['SourceIdentifier'],
+				sourceIdentifier: JSON.parse(event.data)['FFTMagnitudeChunk']['SourceIndentifier'],
 				FreqDomainYValues: freqDatasets,
 				FreqDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1),
-				freqID:
-					JSON.stringify(JSON.parse(event.data)['FFTMagnitudeChunk']['SourceIdentifier']) + '-freq'
+				timeID: JSON.parse(event.data)['FFTMagnitudeChunk']['SourceIndentifier'] + '-time',
+				freqID: JSON.parse(event.data)['FFTMagnitudeChunk']['SourceIndentifier'] + '-freq'
 			});
 		});
 	});

@@ -11,20 +11,26 @@
 	export let sourceIdentifier: string = '-';
 
 	let ctxTime: HTMLElement;
-	let TimeDomainChart: Chart;
+	let TimeDomainChart;
 	export let TimeDomainYValues: number[][] = [];
 	export let TimeDomainXValues: number[] = [];
-	export let timeID;
+	export let timeID: string;
 
 	let ctxFreq: HTMLElement;
-	let FreqDomainChart: Chart;
+	let FreqDomainChart;
 	export let FreqDomainYValues: number[][] = [];
 	export let FreqDomainXValues: number[] = [];
-	export let freqID;
+
+	$: mounted = false;
+
+	export let freqID: string;
 
 	function initTimeCanvas() {
-		ctxTime = document.getElementById(timeID + '-time').getContext('2d');
-
+		console.log(timeID + '-freq');
+		if (!document.getElementById(timeID)) {
+			return;
+		}
+		ctxTime = document.getElementById(timeID).getContext('2d');
 		TimeDomainChart = new Chart(ctxTime, {
 			type: 'line',
 			data: {
@@ -45,10 +51,15 @@
 				}
 			}
 		});
+		TimeDomainChart.update();
 	}
 
 	function initFreqCanvas() {
-		ctxFreq = document.getElementById(freqID + '-freq');
+		console.log(freqID + '-freq');
+		if (!document.getElementById(freqID)) {
+			return;
+		}
+		ctxFreq = document.getElementById(freqID).getContext('2d');
 
 		FreqDomainChart = new Chart(ctxFreq, {
 			type: 'line',
@@ -69,19 +80,22 @@
 				}
 			}
 		});
+
+		FreqDomainChart.update();
 	}
 
 	onMount(() => {
+		console.log('mounting');
+		initTimeCanvas();
 		initFreqCanvas();
+		console.log('mounted');
+		mounted = true;
 	});
 
 	$: {
-		console.log('TimeDoll');
-
 		const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
 
-		if (ctxTime) {
-			console.log('time');
+		if (mounted) {
 			let timeDatasets = [];
 			const numChannels = TimeDomainYValues.length;
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
@@ -91,13 +105,13 @@
 					fill: false
 				});
 			}
+			console.log(TimeDomainChart);
 			TimeDomainChart.data.datasets = timeDatasets;
 			TimeDomainChart.data.labels = TimeDomainXValues;
 			TimeDomainChart.update();
 		}
 
-		if (ctxFreq) {
-			console.log('freq');
+		if (mounted) {
 			let freqDatasets = [];
 			const numChannels = FreqDomainYValues.length;
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
@@ -107,6 +121,7 @@
 					fill: false
 				});
 			}
+			console.log(FreqDomainChart);
 			FreqDomainChart.data.datasets = freqDatasets;
 			FreqDomainChart.data.labels = FreqDomainXValues;
 			FreqDomainChart.update();
@@ -123,7 +138,7 @@
 				<p class="parameter">Chunk Size: {timeChunkSize}</p>
 			</div>
 			<div>
-				<canvas class="canvas" id={timeID} bind:this={TimeDomainChart} on:load={initTimeCanvas} />
+				<canvas class="canvas" id={timeID} bind:this={TimeDomainChart} />
 			</div>
 		</div>
 		<div class="graphGroup">
@@ -132,7 +147,7 @@
 				<p class="parameter">Chunk Size: {freqChunkSize}</p>
 			</div>
 			<div>
-				<canvas class="canvas" id={freqID} bind:this={FreqDomainChart} on:load={initFreqCanvas} />
+				<canvas class="canvas" id={freqID} bind:this={FreqDomainChart} />
 			</div>
 		</div>
 	</div>
