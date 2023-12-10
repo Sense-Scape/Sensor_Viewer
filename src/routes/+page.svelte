@@ -13,11 +13,7 @@
 	// }
 
 	function updateItemInMap(key, value) {
-		//const existingItemIndex = mapData.findIndex((item) => item.id === newItem.id);
-		// console.log(key);
-		// console.log(value);
-		// console.log('----');
-
+		// Start by checking if we have seen this source identifier before
 		let index = -1;
 		for (let i = 0; i < mapData.length; i++) {
 			if (JSON.stringify(mapData[i].key) === JSON.stringify(key)) {
@@ -25,7 +21,7 @@
 				break;
 			}
 		}
-		// new or first entry
+		// If not add it to our array
 		if (index == -1) {
 			if (mapData.length == 0) {
 				index = 0;
@@ -43,14 +39,10 @@
 			}
 			console.log('Added at index:  ' + index);
 		} else {
-			console.log('Found at index:  (START)' + index);
-			console.log(mapData[index].value['TimeDomainYValues']);
-
+			// If we have seen it, update its values
 			for (const key in value) {
 				mapData[index].value[key] = JSON.parse(JSON.stringify(value[key]));
 			}
-			console.log(mapData[index].value['TimeDomainYValues']);
-			console.log('Found at index:  (END)' + index);
 		}
 	}
 
@@ -63,47 +55,46 @@
 			var timeParsedData = JSON.parse(event.data);
 			let timeDatasets = [];
 
-			// Check if we are tracking it in the mpa already
-			// And if not then track it
+			// COnvert data to array
 			const newData = timeParsedData['TimeChunk']['Channels'];
 			const numChannels = timeParsedData['TimeChunk']['NumChannels'];
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 				timeDatasets[channelIndex] = newData[channelIndex];
 			}
+
 			// console.log(newData);
-			let a = {
+			updateItemInMap(timeParsedData['TimeChunk']['SourceIdentifier'], {
 				timeSampleRate: timeParsedData['TimeChunk']['SampleRate'],
 				timeChunkSize: timeParsedData['TimeChunk']['ChunkSize'],
 				sourceIdentifier: timeParsedData['TimeChunk']['SourceIdentifier'],
 				TimeDomainYValues: timeDatasets,
 				TimeDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1),
-				timeID: timeParsedData['TimeChunk']['SourceIdentifier'] + '-time'
-			};
-			updateItemInMap(timeParsedData['TimeChunk']['SourceIdentifier'], a);
+				timeID: timeParsedData['TimeChunk']['SourceIdentifier'] + '-time',
+				freqID: timeParsedData['TimeChunk']['SourceIdentifier'] + '-freq'
+			});
 		});
 
 		const FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
 		let FreqParsedData = null;
 		let freqDatasets = [];
 		FreqWebSocket.addEventListener('message', async (event) => {
-			const receivedMessage = event.data;
-			FreqParsedData = JSON.parse(receivedMessage);
+			FreqParsedData = JSON.parse(event.data);
 
-			// Check if we are tracking it in the mpa already
-			// And if not then track it
-			// const newData = FreqParsedData['FFTMagnitudeChunk']['Channels'];
-			// const numChannels = FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
-			// for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-			// 	freqDatasets[channelIndex] = newData[channelIndex];
-			// }
-			// updateItemInMap(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'], {
-			// 	freqSampleRate: FreqParsedData['FFTMagnitudeChunk']['SampleRate'],
-			// 	freqChunkSize: FreqParsedData['FFTMagnitudeChunk']['ChunkSize'],
-			// 	sourceIdentifier: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'],
-			// 	FreqDomainYValues: freqDatasets,
-			// 	FreqDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1),
-			// 	timeID: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'] + '-time'
-			// });
+			const newData = FreqParsedData['FFTMagnitudeChunk']['Channels'];
+			const numChannels = FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
+			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+				freqDatasets[channelIndex] = newData[channelIndex];
+			}
+
+			updateItemInMap(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'], {
+				freqSampleRate: FreqParsedData['FFTMagnitudeChunk']['SampleRate'],
+				freqChunkSize: FreqParsedData['FFTMagnitudeChunk']['ChunkSize'],
+				sourceIdentifier: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'],
+				FreqDomainYValues: freqDatasets,
+				FreqDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1),
+				freqID: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'] + '-freq',
+				timeID: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'] + '-time'
+			});
 		});
 	});
 </script>

@@ -26,7 +26,7 @@
 	export let freqID: string;
 
 	function initTimeCanvas() {
-		console.log(timeID + '-freq');
+		console.log(timeID + '-time');
 		if (!document.getElementById(timeID)) {
 			return;
 		}
@@ -47,7 +47,7 @@
 				legend: { display: false },
 				animation: {
 					// Disable animations
-					duration: 2 // Set the duration to 0 for all animations
+					duration: 3 // Set the duration to 0 for all animations
 				}
 			}
 		});
@@ -76,7 +76,7 @@
 			options: {
 				legend: { display: false },
 				animation: {
-					duration: 2
+					duration: 3
 				}
 			}
 		});
@@ -96,42 +96,39 @@
 		const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
 
 		if (mounted) {
-			const numChannels = TimeDomainYValues.length;
-			console.log('Upading (START) ' + timeID);
-			console.log(TimeDomainYValues);
 			let timeDatasets = [];
-
-			// Create an empty dataset for each channel
+			const numChannels = TimeDomainYValues.length;
+			// console.log('Upading (START) ' + timeID);
+			// console.log(TimeDomainYValues);
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 				timeDatasets.push({
-					data: [],
+					data: TimeDomainYValues[channelIndex],
 					borderColor: colors[channelIndex],
 					fill: false
 				});
 			}
-
-			// Update the data for each channel
-			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-				timeDatasets[channelIndex].data.push(...TimeDomainYValues[channelIndex]);
-			}
-
-			console.log('Upading (END) ' + timeID);
+			// console.log('Upading (END) ' + timeID);
 			TimeDomainChart.data.datasets = timeDatasets;
 			TimeDomainChart.data.labels = TimeDomainXValues;
 
-			// let freqDatasets = [];
-			// for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-			// 	freqDatasets.push({
-			// 		data: FreqDomainYValues[channelIndex],
-			// 		borderColor: colors[channelIndex],
-			// 		fill: false
-			// 	});
-			// }
-			// FreqDomainChart.data.datasets = freqDatasets;
-			// FreqDomainChart.data.labels = FreqDomainXValues;
+			let freqDatasets = [];
+			console.log('Upading (START) ' + freqID);
+			console.log(FreqDomainYValues);
+			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+				freqDatasets.push({
+					data: FreqDomainYValues[channelIndex],
+					borderColor: colors[channelIndex],
+					fill: false
+				});
+			}
+			// console.log('Upading (END) ' + freqID);
+			console.log('--');
+			console.log(FreqDomainChart);
+			FreqDomainChart.data.datasets = freqDatasets;
+			FreqDomainChart.data.labels = FreqDomainXValues;
 
 			TimeDomainChart.update();
-			//FreqDomainChart.update();
+			FreqDomainChart.update();
 		}
 	}
 </script>
