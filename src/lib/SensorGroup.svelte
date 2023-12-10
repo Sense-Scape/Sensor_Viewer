@@ -47,7 +47,7 @@
 				legend: { display: false },
 				animation: {
 					// Disable animations
-					duration: 1 // Set the duration to 0 for all animations
+					duration: 2 // Set the duration to 0 for all animations
 				}
 			}
 		});
@@ -76,7 +76,7 @@
 			options: {
 				legend: { display: false },
 				animation: {
-					duration: 1
+					duration: 2
 				}
 			}
 		});
@@ -96,35 +96,42 @@
 		const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
 
 		if (mounted) {
-			let timeDatasets = [];
 			const numChannels = TimeDomainYValues.length;
+			console.log('Upading (START) ' + timeID);
+			console.log(TimeDomainYValues);
+			let timeDatasets = [];
+
+			// Create an empty dataset for each channel
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 				timeDatasets.push({
-					data: TimeDomainYValues[channelIndex],
+					data: [],
 					borderColor: colors[channelIndex],
 					fill: false
 				});
 			}
-			console.log(TimeDomainChart);
+
+			// Update the data for each channel
+			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+				timeDatasets[channelIndex].data.push(...TimeDomainYValues[channelIndex]);
+			}
+
+			console.log('Upading (END) ' + timeID);
 			TimeDomainChart.data.datasets = timeDatasets;
 			TimeDomainChart.data.labels = TimeDomainXValues;
-			TimeDomainChart.update();
-		}
 
-		if (mounted) {
-			let freqDatasets = [];
-			const numChannels = FreqDomainYValues.length;
-			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-				freqDatasets.push({
-					data: FreqDomainYValues[channelIndex],
-					borderColor: colors[channelIndex],
-					fill: false
-				});
-			}
-			console.log(FreqDomainChart);
-			FreqDomainChart.data.datasets = freqDatasets;
-			FreqDomainChart.data.labels = FreqDomainXValues;
-			FreqDomainChart.update();
+			// let freqDatasets = [];
+			// for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+			// 	freqDatasets.push({
+			// 		data: FreqDomainYValues[channelIndex],
+			// 		borderColor: colors[channelIndex],
+			// 		fill: false
+			// 	});
+			// }
+			// FreqDomainChart.data.datasets = freqDatasets;
+			// FreqDomainChart.data.labels = FreqDomainXValues;
+
+			TimeDomainChart.update();
+			//FreqDomainChart.update();
 		}
 	}
 </script>

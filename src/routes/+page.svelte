@@ -5,7 +5,7 @@
 	import { writable } from 'svelte/store';
 
 	// Create a writable store initialized as an empty object (to mimic a map)
-	let mapData = [];
+	var mapData = [];
 
 	// Function to add an item to the "map"
 	// function updateItemInMap(key, value) {
@@ -14,6 +14,10 @@
 
 	function updateItemInMap(key, value) {
 		//const existingItemIndex = mapData.findIndex((item) => item.id === newItem.id);
+		// console.log(key);
+		// console.log(value);
+		// console.log('----');
+
 		let index = -1;
 		for (let i = 0; i < mapData.length; i++) {
 			if (JSON.stringify(mapData[i].key) === JSON.stringify(key)) {
@@ -21,46 +25,61 @@
 				break;
 			}
 		}
-		if (index !== -1) {
-			// Update the existing item
-			let a = Object.assign(mapData[index].value, value);
-			mapData[index].value = a;
-		} else {
-			// Add the new item if it doesn't exist
-			let newItem = { key: key, value: value }; // Assuming key represents the 'id' of the item
-			mapData.push(newItem);
-		}
+		// new or first entry
+		if (index == -1) {
+			if (mapData.length == 0) {
+				index = 0;
+				mapData[index] = {
+					key: key,
+					value: value
+				};
+			} else {
+				index = mapData.length;
 
-		console.log();
+				mapData[index] = {
+					key: key,
+					value: value
+				};
+			}
+			console.log('Added at index:  ' + index);
+		} else {
+			console.log('Found at index:  (START)' + index);
+			console.log(mapData[index].value['TimeDomainYValues']);
+
+			for (const key in value) {
+				mapData[index].value[key] = JSON.parse(JSON.stringify(value[key]));
+			}
+			console.log(mapData[index].value['TimeDomainYValues']);
+			console.log('Found at index:  (END)' + index);
+		}
 	}
 
 	// Create the time domain chart and link mount it to the HTML canvas
 	onMount(() => {
 		const TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
-		let timeParsedData = null;
-		let timeDatasets = [];
 
 		// console.log(sensorGroup);
 		TimeWebSocket.addEventListener('message', async (event) => {
-			const receivedMessage = event.data;
-			timeParsedData = JSON.parse(receivedMessage);
+			var timeParsedData = JSON.parse(event.data);
+			let timeDatasets = [];
 
 			// Check if we are tracking it in the mpa already
 			// And if not then track it
-			const newData = JSON.parse(event.data)['TimeChunk']['Channels'];
-			const numChannels = JSON.parse(event.data)['TimeChunk']['NumChannels'];
+			const newData = timeParsedData['TimeChunk']['Channels'];
+			const numChannels = timeParsedData['TimeChunk']['NumChannels'];
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 				timeDatasets[channelIndex] = newData[channelIndex];
 			}
-			updateItemInMap(JSON.parse(event.data)['TimeChunk']['SourceIndentifier'], {
-				timeSampleRate: JSON.parse(event.data)['TimeChunk']['SampleRate'],
-				timeChunkSize: JSON.parse(event.data)['TimeChunk']['ChunkSize'],
-				sourceIdentifier: JSON.parse(event.data)['TimeChunk']['SourceIndentifier'],
+			// console.log(newData);
+			let a = {
+				timeSampleRate: timeParsedData['TimeChunk']['SampleRate'],
+				timeChunkSize: timeParsedData['TimeChunk']['ChunkSize'],
+				sourceIdentifier: timeParsedData['TimeChunk']['SourceIdentifier'],
 				TimeDomainYValues: timeDatasets,
 				TimeDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1),
-				timeID: JSON.parse(event.data)['TimeChunk']['SourceIndentifier'] + '-time',
-				freqID: JSON.parse(event.data)['TimeChunk']['SourceIndentifier'] + '-freq'
-			});
+				timeID: timeParsedData['TimeChunk']['SourceIdentifier'] + '-time'
+			};
+			updateItemInMap(timeParsedData['TimeChunk']['SourceIdentifier'], a);
 		});
 
 		const FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
@@ -72,20 +91,19 @@
 
 			// Check if we are tracking it in the mpa already
 			// And if not then track it
-			const newData = JSON.parse(event.data)['FFTMagnitudeChunk']['Channels'];
-			const numChannels = JSON.parse(event.data)['FFTMagnitudeChunk']['NumChannels'];
-			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-				freqDatasets[channelIndex] = newData[channelIndex];
-			}
-			updateItemInMap(JSON.parse(event.data)['FFTMagnitudeChunk']['SourceIndentifier'], {
-				freqSampleRate: JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate'],
-				freqChunkSize: JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize'],
-				sourceIdentifier: JSON.parse(event.data)['FFTMagnitudeChunk']['SourceIndentifier'],
-				FreqDomainYValues: freqDatasets,
-				FreqDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1),
-				timeID: JSON.parse(event.data)['FFTMagnitudeChunk']['SourceIndentifier'] + '-time',
-				freqID: JSON.parse(event.data)['FFTMagnitudeChunk']['SourceIndentifier'] + '-freq'
-			});
+			// const newData = FreqParsedData['FFTMagnitudeChunk']['Channels'];
+			// const numChannels = FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
+			// for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+			// 	freqDatasets[channelIndex] = newData[channelIndex];
+			// }
+			// updateItemInMap(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'], {
+			// 	freqSampleRate: FreqParsedData['FFTMagnitudeChunk']['SampleRate'],
+			// 	freqChunkSize: FreqParsedData['FFTMagnitudeChunk']['ChunkSize'],
+			// 	sourceIdentifier: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'],
+			// 	FreqDomainYValues: freqDatasets,
+			// 	FreqDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1),
+			// 	timeID: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'] + '-time'
+			// });
 		});
 	});
 </script>
