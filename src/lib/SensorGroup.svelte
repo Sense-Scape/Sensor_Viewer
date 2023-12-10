@@ -37,17 +37,14 @@
 				labels: TimeDomainXValues,
 				datasets: [
 					{
-						data: TimeDomainYValues,
-						borderColor: 'red',
-						fill: false
+						pointRadius: 0,
+						data: TimeDomainYValues
 					}
 				]
 			},
 			options: {
-				legend: { display: false },
 				animation: {
-					// Disable animations
-					duration: 3 // Set the duration to 0 for all animations
+					duration: 20
 				}
 			}
 		});
@@ -67,16 +64,14 @@
 				labels: FreqDomainXValues,
 				datasets: [
 					{
-						data: FreqDomainYValues,
-						borderColor: 'red',
-						fill: false
+						pointRadius: 0,
+						data: FreqDomainYValues
 					}
 				]
 			},
 			options: {
-				legend: { display: false },
 				animation: {
-					duration: 3
+					duration: 20
 				}
 			}
 		});
@@ -85,45 +80,34 @@
 	}
 
 	onMount(() => {
-		console.log('mounting');
 		initTimeCanvas();
 		initFreqCanvas();
-		console.log('mounted');
 		mounted = true;
 	});
 
 	$: {
-		const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
-
 		if (mounted) {
 			let timeDatasets = [];
 			const numChannels = TimeDomainYValues.length;
-			// console.log('Upading (START) ' + timeID);
-			// console.log(TimeDomainYValues);
+
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 				timeDatasets.push({
-					data: TimeDomainYValues[channelIndex],
-					borderColor: colors[channelIndex],
-					fill: false
+					pointRadius: 0,
+					data: TimeDomainYValues[channelIndex]
 				});
 			}
-			// console.log('Upading (END) ' + timeID);
+
 			TimeDomainChart.data.datasets = timeDatasets;
 			TimeDomainChart.data.labels = TimeDomainXValues;
 
 			let freqDatasets = [];
-			console.log('Upading (START) ' + freqID);
-			console.log(FreqDomainYValues);
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 				freqDatasets.push({
-					data: FreqDomainYValues[channelIndex],
-					borderColor: colors[channelIndex],
-					fill: false
+					pointRadius: 0,
+					data: FreqDomainYValues[channelIndex]
 				});
 			}
-			// console.log('Upading (END) ' + freqID);
-			console.log('--');
-			console.log(FreqDomainChart);
+
 			FreqDomainChart.data.datasets = freqDatasets;
 			FreqDomainChart.data.labels = FreqDomainXValues;
 

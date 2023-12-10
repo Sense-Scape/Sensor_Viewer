@@ -7,11 +7,6 @@
 	// Create a writable store initialized as an empty object (to mimic a map)
 	var mapData = [];
 
-	// Function to add an item to the "map"
-	// function updateItemInMap(key, value) {
-	// 	mapData.set(key, value);
-	// }
-
 	function updateItemInMap(key, value) {
 		// Start by checking if we have seen this source identifier before
 		let index = -1;
