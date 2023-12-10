@@ -1,8 +1,7 @@
 <script lang="ts">
-	import Chart from 'chart.js/auto';
 	import SensorGroup from '$lib/SensorGroup.svelte';
 	import { onMount } from 'svelte';
-	import { writable } from 'svelte/store';
+	import { Button } from '@svelteuidev/core';
 
 	// Create a writable store initialized as an empty object (to mimic a map)
 	var mapData = [];
@@ -118,12 +117,35 @@
 </svelte:head>
 
 <div>
-	<div id="sensors">
-		{#each mapData as data}
-			<SensorGroup {...data.value} />
-		{/each}
+	<div class="container">
+		<div class="list">
+			{#each mapData as data}
+				<Button variant="outline" fullSize>{data.key}</Button>
+			{/each}
+		</div>
+		<div class="list2" id="sensors">
+			{#each mapData as data}
+				<SensorGroup {...data.value} />
+			{/each}
+		</div>
 	</div>
 </div>
 
 <style>
+	.list {
+		flex-direction: row;
+		width: 10%;
+		height: 100%;
+	}
+
+	.list2 {
+		flex-direction: row;
+		width: 90%;
+		height: 100%;
+	}
+
+	.container {
+		display: flex;
+		flex-direction: row;
+	}
 </style>
