@@ -45,6 +45,11 @@
 			options: {
 				animation: {
 					duration: 20
+				},
+				plugins: {
+					legend: {
+						display: false
+					}
 				}
 			}
 		});
@@ -72,6 +77,11 @@
 			options: {
 				animation: {
 					duration: 20
+				},
+				plugins: {
+					legend: {
+						display: false
+					}
 				}
 			}
 		});
@@ -99,7 +109,7 @@
 
 			TimeDomainChart.data.datasets = timeDatasets;
 			TimeDomainChart.data.labels = TimeDomainXValues;
-
+			TimeDomainChart.update();
 			let freqDatasets = [];
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 				freqDatasets.push({
@@ -110,8 +120,6 @@
 
 			FreqDomainChart.data.datasets = freqDatasets;
 			FreqDomainChart.data.labels = FreqDomainXValues;
-
-			TimeDomainChart.update();
 			FreqDomainChart.update();
 		}
 	}

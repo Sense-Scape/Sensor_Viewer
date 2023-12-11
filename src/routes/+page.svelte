@@ -1,10 +1,14 @@
 <script lang="ts">
 	import SensorGroup from '$lib/SensorGroup.svelte';
 	import { onMount } from 'svelte';
-	import { Button } from '@svelteuidev/core';
+	import { Button, Badge } from '@svelteuidev/core';
 
 	// Create a writable store initialized as an empty object (to mimic a map)
 	var mapData = [];
+
+	function handleClick(i) {
+		mapData[i].display = !mapData[i].display;
+	}
 
 	function updateItemInMap(key, value) {
 		// Start by checking if we have seen this source identifier before
@@ -21,7 +25,8 @@
 				index = 0;
 				mapData[index] = {
 					key: key,
-					value: value
+					value: value,
+					display: false
 				};
 			} else {
 				index = mapData.length;
@@ -31,11 +36,12 @@
 					value: value
 				};
 			}
-			console.log('Added at index:  ' + index);
 		} else {
 			// If we have seen it, update its values
-			for (const key in value) {
-				mapData[index].value[key] = JSON.parse(JSON.stringify(value[key]));
+			if (mapData[index].display) {
+				for (const key in value) {
+					mapData[index].value[key] = JSON.parse(JSON.stringify(value[key]));
+				}
 			}
 		}
 	}
@@ -44,19 +50,17 @@
 	onMount(() => {
 		const TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
 
-		// console.log(sensorGroup);
 		TimeWebSocket.addEventListener('message', async (event) => {
 			var timeParsedData = JSON.parse(event.data);
 			let timeDatasets = [];
 
-			// COnvert data to array
+			// Convert data to array
 			const newData = timeParsedData['TimeChunk']['Channels'];
 			const numChannels = timeParsedData['TimeChunk']['NumChannels'];
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 				timeDatasets[channelIndex] = newData[channelIndex];
 			}
 
-			// console.log(newData);
 			updateItemInMap(timeParsedData['TimeChunk']['SourceIdentifier'], {
 				timeSampleRate: timeParsedData['TimeChunk']['SampleRate'],
 				timeChunkSize: timeParsedData['TimeChunk']['ChunkSize'],
@@ -119,13 +123,19 @@
 <div>
 	<div class="container">
 		<div class="list">
-			{#each mapData as data}
-				<Button variant="outline" fullSize>{data.key}</Button>
+			<Badge color="gray" size="lg" radius="sm">Device ID</Badge>
+
+			{#each mapData as data, i}
+				<Button variant="light" color="gray" size="md" ripple on:click={handleClick.bind(this, i)}
+					>{data.key}</Button
+				>
 			{/each}
 		</div>
 		<div class="list2" id="sensors">
 			{#each mapData as data}
-				<SensorGroup {...data.value} />
+				{#if data.display}
+					<SensorGroup {...data.value} />
+				{/if}
 			{/each}
 		</div>
 	</div>
