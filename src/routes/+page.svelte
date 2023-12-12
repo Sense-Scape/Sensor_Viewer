@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SensorGroup from '$lib/SensorGroup.svelte';
 	import { onMount } from 'svelte';
-	import { Button, Badge } from '@svelteuidev/core';
+	import { Button, Badge, Stack } from '@svelteuidev/core';
 
 	// Create a writable store initialized as an empty object (to mimic a map)
 	var mapData = [];
@@ -10,6 +10,21 @@
 		mapData[i].display = !mapData[i].display;
 	}
 
+	function checkIfActive(key) {
+		let index = -1;
+		for (let i = 0; i < mapData.length; i++) {
+			if (JSON.stringify(mapData[i].key) === JSON.stringify(key)) {
+				index = i;
+				break;
+			}
+		}
+
+		if (index == -1) {
+			return true;
+		} else {
+			return mapData[index].display;
+		}
+	}
 	function updateItemInMap(key, value) {
 		// Start by checking if we have seen this source identifier before
 		let index = -1;
@@ -54,6 +69,9 @@
 			var timeParsedData = JSON.parse(event.data);
 			let timeDatasets = [];
 
+			if (!checkIfActive(timeParsedData['TimeChunk']['SourceIdentifier'])) {
+				return;
+			}
 			// Convert data to array
 			const newData = timeParsedData['TimeChunk']['Channels'];
 			const numChannels = timeParsedData['TimeChunk']['NumChannels'];
@@ -77,6 +95,10 @@
 		let freqDatasets = [];
 		FreqWebSocket.addEventListener('message', async (event) => {
 			FreqParsedData = JSON.parse(event.data);
+
+			if (!checkIfActive(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'])) {
+				return;
+			}
 
 			const newData = FreqParsedData['FFTMagnitudeChunk']['Channels'];
 			const numChannels = FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
@@ -122,14 +144,22 @@
 
 <div>
 	<div class="container">
-		<div class="list">
-			<Badge color="gray" size="lg" radius="sm">Device ID</Badge>
+		<div class="spacer">
+			<Stack align="center" spacing="xs">
+				<Badge color="gray" size="xl" radius="lg">Device ID</Badge>
 
-			{#each mapData as data, i}
-				<Button variant="light" color="gray" size="md" ripple on:click={handleClick.bind(this, i)}
-					>{data.key}</Button
-				>
-			{/each}
+				{#each mapData as data, i}
+					<div class="Button">
+						<Button
+							variant="light"
+							color="gray"
+							size="lg"
+							ripple
+							on:click={handleClick.bind(this, i)}>{data.key}</Button
+						>
+					</div>
+				{/each}
+			</Stack>
 		</div>
 		<div class="list2" id="sensors">
 			{#each mapData as data}
@@ -142,15 +172,21 @@
 </div>
 
 <style>
-	.list {
+	.Button {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.spacer {
 		flex-direction: row;
-		width: 10%;
+		width: 20%;
 		height: 100%;
 	}
 
 	.list2 {
 		flex-direction: row;
-		width: 90%;
+		width: 80%;
 		height: 100%;
 	}
 

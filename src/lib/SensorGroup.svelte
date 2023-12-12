@@ -2,6 +2,7 @@
 	import Chart from 'chart.js/auto';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
+	import { Badge } from '@svelteuidev/core';
 
 	// Define the props expected by SensorGroup
 	export let timeSampleRate: number = -1;
@@ -44,7 +45,7 @@
 			},
 			options: {
 				animation: {
-					duration: 20
+					duration: 1000
 				},
 				plugins: {
 					legend: {
@@ -76,7 +77,7 @@
 			},
 			options: {
 				animation: {
-					duration: 20
+					duration: 1000
 				},
 				plugins: {
 					legend: {
@@ -126,12 +127,12 @@
 </script>
 
 <div class-="sensorGroup">
-	<div class="sensorGroupTitle">Sensor ID: {sourceIdentifier}</div>
+	<Badge color="gray" radius="md" size="xl">Sensor ID: {sourceIdentifier}</Badge>
 	<div class="graphSuperGroup">
 		<div class="graphGroup">
 			<div class="parameterContainer">
-				<p class="parameter">Sample Rate: {timeSampleRate}</p>
-				<p class="parameter">Chunk Size: {timeChunkSize}</p>
+				<Badge color="gray">Sample Rate: {timeSampleRate}</Badge>
+				<Badge color="gray">Chunk Size: {timeChunkSize}</Badge>
 			</div>
 			<div>
 				<canvas class="canvas" id={timeID} bind:this={TimeDomainChart} />
@@ -139,8 +140,8 @@
 		</div>
 		<div class="graphGroup">
 			<div class="parameterContainer">
-				<p class="parameter">Sample Rate: {freqSampleRate}</p>
-				<p class="parameter">Chunk Size: {freqChunkSize}</p>
+				<Badge color="gray">Sample Rate: {freqSampleRate}</Badge>
+				<Badge color="gray">Chunk Size: {freqChunkSize}</Badge>
 			</div>
 			<div>
 				<canvas class="canvas" id={freqID} bind:this={FreqDomainChart} />
