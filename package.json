@@ -45,9 +45,11 @@
 		"@svelteuidev/composables": "^0.15.4",
 		"@svelteuidev/core": "^0.15.4",
 		"d3": "^7.8.5",
+		"dygraphs": "^2.2.1",
 		"framework7-svelte": "^8.3.0",
 		"socket.io": "^4.7.2",
 		"socket.io-client": "^4.7.2",
-		"svelte-chartjs": "^3.1.2"
+		"svelte-chartjs": "^3.1.2",
+		"webgl-plot": "^0.7.1"
 	}
 }

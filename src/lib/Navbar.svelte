@@ -1,3 +1,7 @@
+<script lang="ts">
+	import { Badge } from '@svelteuidev/core';
+</script>
+
 <section>
 	<nav>
 		<a href="/">Home</a>

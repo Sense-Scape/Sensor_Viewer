@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { Badge } from '@svelteuidev/core';
+	import { WebglPlot, WebglLine, ColorRGBA } from 'webgl-plot';
 
 	// Define the props expected by SensorGroup
 	export let timeSampleRate: number = -1;
@@ -26,35 +27,50 @@
 
 	export let freqID: string;
 
+	let numX;
+	let color;
+	let line;
+	let wglp;
+
 	function initTimeCanvas() {
-		console.log(timeID + '-time');
+		// console.log(timeID + '-time');
 		if (!document.getElementById(timeID)) {
 			return;
 		}
-		ctxTime = document.getElementById(timeID).getContext('2d');
-		TimeDomainChart = new Chart(ctxTime, {
-			type: 'line',
-			data: {
-				labels: TimeDomainXValues,
-				datasets: [
-					{
-						pointRadius: 0,
-						data: TimeDomainYValues
-					}
-				]
-			},
-			options: {
-				animation: {
-					duration: 1000
-				},
-				plugins: {
-					legend: {
-						display: false
-					}
-				}
-			}
-		});
-		TimeDomainChart.update();
+		// ctxTime = document.getElementById(timeID).getContext('2d');
+		// TimeDomainChart = new Chart(ctxTime, {
+		// 	type: 'line',
+		// 	data: {
+		// 		labels: TimeDomainXValues,
+		// 		datasets: [
+		// 			{
+		// 				pointRadius: 0,
+		// 				data: TimeDomainYValues
+		// 			}
+		// 		]
+		// 	},
+		// 	options: {
+		// 		animation: false,
+		// 		plugins: {
+		// 			legend: {
+		// 				display: false
+		// 			}
+		// 		}
+		// 	}
+		// });
+		// TimeDomainChart.update();
+		TimeDomainChart = document.getElementById(timeID);
+		const devicePixelRatio = window.devicePixelRatio || 2;
+		TimeDomainChart.width = TimeDomainChart.clientWidth * devicePixelRatio;
+		TimeDomainChart.height = TimeDomainChart.clientHeight * devicePixelRatio;
+
+		numX = 512;
+		color = new ColorRGBA(Math.random(), Math.random(), Math.random(), 1);
+		line = new WebglLine(color, numX);
+		wglp = new WebglPlot(TimeDomainChart);
+
+		line.arrangeX();
+		wglp.addLine(line);
 	}
 
 	function initFreqCanvas() {
@@ -76,9 +92,7 @@
 				]
 			},
 			options: {
-				animation: {
-					duration: 1000
-				},
+				animation: false,
 				plugins: {
 					legend: {
 						display: false
@@ -98,19 +112,27 @@
 
 	$: {
 		if (mounted) {
-			let timeDatasets = [];
+			// let timeDatasets = [];
 			const numChannels = TimeDomainYValues.length;
 
-			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-				timeDatasets.push({
-					pointRadius: 0,
-					data: TimeDomainYValues[channelIndex]
-				});
+			for (let i = 0; i < timeChunkSize; i++) {
+				// const ySin = Math.sin(Math.PI * i * freq * Math.PI * 2);
+				// const yNoise = Math.random() - 0.5;
+				line.setY(i, TimeDomainYValues[0][i] / 32768);
 			}
 
-			TimeDomainChart.data.datasets = timeDatasets;
-			TimeDomainChart.data.labels = TimeDomainXValues;
-			TimeDomainChart.update();
+			wglp.update();
+
+			// for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+			// 	timeDatasets.push({
+			// 		pointRadius: 0,
+			// 		data: TimeDomainYValues[channelIndex]
+			// 	});
+			// }
+
+			// TimeDomainChart.data.datasets = timeDatasets;
+			// TimeDomainChart.data.labels = TimeDomainXValues;
+			// TimeDomainChart.update();
 			let freqDatasets = [];
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 				freqDatasets.push({
@@ -135,6 +157,7 @@
 				<Badge color="gray">Chunk Size: {timeChunkSize}</Badge>
 			</div>
 			<div>
+				<!-- <canvas style="width: 100%;" id="my_canvas" /> -->
 				<canvas class="canvas" id={timeID} bind:this={TimeDomainChart} />
 			</div>
 		</div>

@@ -147,13 +147,12 @@
 		<div class="spacer">
 			<Stack align="center" spacing="xs">
 				<Badge color="gray" size="xl" radius="lg">Device ID</Badge>
-
 				{#each mapData as data, i}
 					<div class="Button">
 						<Button
 							variant="light"
 							color="gray"
-							size="lg"
+							size="sm"
 							ripple
 							on:click={handleClick.bind(this, i)}>{data.key}</Button
 						>
