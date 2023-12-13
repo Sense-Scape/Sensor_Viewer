@@ -23,127 +23,109 @@
 	export let FreqDomainYValues: number[][] = [];
 	export let FreqDomainXValues: number[] = [];
 
-	$: mounted = false;
+	$: TimeMounted = false;
+	$: FreqMounted = false;
 
 	export let freqID: string;
 
-	let numX;
-	let color;
-	let line;
-	let wglp;
+	let timeNumX;
+	let timeColor;
+	let timeLines = [];
+	let timeWglp;
+
+	let freqNumX;
+	let freqColor;
+	let freqLines = [];
+	let freqWglp;
+	onMount(() => {
+		initTimeCanvas();
+		initFreqCanvas();
+	});
 
 	function initTimeCanvas() {
-		// console.log(timeID + '-time');
 		if (!document.getElementById(timeID)) {
 			return;
 		}
-		// ctxTime = document.getElementById(timeID).getContext('2d');
-		// TimeDomainChart = new Chart(ctxTime, {
-		// 	type: 'line',
-		// 	data: {
-		// 		labels: TimeDomainXValues,
-		// 		datasets: [
-		// 			{
-		// 				pointRadius: 0,
-		// 				data: TimeDomainYValues
-		// 			}
-		// 		]
-		// 	},
-		// 	options: {
-		// 		animation: false,
-		// 		plugins: {
-		// 			legend: {
-		// 				display: false
-		// 			}
-		// 		}
-		// 	}
-		// });
-		// TimeDomainChart.update();
+
+		if (!TimeDomainYValues.length) {
+			return;
+		}
+
 		TimeDomainChart = document.getElementById(timeID);
 		const devicePixelRatio = window.devicePixelRatio || 2;
 		TimeDomainChart.width = TimeDomainChart.clientWidth * devicePixelRatio;
 		TimeDomainChart.height = TimeDomainChart.clientHeight * devicePixelRatio;
 
-		numX = 512;
-		color = new ColorRGBA(Math.random(), Math.random(), Math.random(), 1);
-		line = new WebglLine(color, numX);
-		wglp = new WebglPlot(TimeDomainChart);
+		timeNumX = timeChunkSize;
+		timeWglp = new WebglPlot(TimeDomainChart);
 
-		line.arrangeX();
-		wglp.addLine(line);
+		const numChannels = TimeDomainYValues.length;
+
+		for (let i = 0; i < numChannels; i++) {
+			timeColor = new ColorRGBA(Math.random(), Math.random(), Math.random(), 1);
+			let line = new WebglLine(timeColor, timeNumX);
+			line.arrangeX();
+			timeWglp.addLine(line);
+			timeLines.push(line);
+		}
+		TimeMounted = true;
 	}
 
 	function initFreqCanvas() {
-		console.log(freqID + '-freq');
-		if (!document.getElementById(freqID)) {
+		if (!document.getElementById(timeID)) {
 			return;
 		}
-		ctxFreq = document.getElementById(freqID).getContext('2d');
 
-		FreqDomainChart = new Chart(ctxFreq, {
-			type: 'line',
-			data: {
-				labels: FreqDomainXValues,
-				datasets: [
-					{
-						pointRadius: 0,
-						data: FreqDomainYValues
-					}
-				]
-			},
-			options: {
-				animation: false,
-				plugins: {
-					legend: {
-						display: false
-					}
-				}
-			}
-		});
+		if (!FreqDomainYValues.length) {
+			return;
+		}
 
-		FreqDomainChart.update();
+		FreqDomainChart = document.getElementById(freqID);
+		const devicePixelRatio = window.devicePixelRatio || 2;
+		FreqDomainChart.width = FreqDomainChart.clientWidth * devicePixelRatio;
+		FreqDomainChart.height = FreqDomainChart.clientHeight * devicePixelRatio;
+
+		freqNumX = freqChunkSize;
+
+		freqWglp = new WebglPlot(FreqDomainChart);
+
+		const freqNumChannels = FreqDomainYValues.length;
+
+		for (let i = 0; i < freqNumChannels; i++) {
+			freqColor = new ColorRGBA(Math.random(), Math.random(), Math.random(), 1);
+			let line = new WebglLine(freqColor, freqNumX);
+			line.arrangeX();
+			freqWglp.addLine(line);
+			freqLines.push(line);
+		}
+
+		console.log(freqLines);
+		FreqMounted = true;
 	}
 
-	onMount(() => {
-		initTimeCanvas();
-		initFreqCanvas();
-		mounted = true;
-	});
-
 	$: {
-		if (mounted) {
-			// let timeDatasets = [];
-			const numChannels = TimeDomainYValues.length;
-
-			for (let i = 0; i < timeChunkSize; i++) {
-				// const ySin = Math.sin(Math.PI * i * freq * Math.PI * 2);
-				// const yNoise = Math.random() - 0.5;
-				line.setY(i, TimeDomainYValues[0][i] / 32768);
+		if (TimeMounted) {
+			let timeNumChannels = TimeDomainYValues.length;
+			for (let i = 0; i < timeNumChannels; i++) {
+				for (let j = 0; j < timeChunkSize; j++) {
+					timeLines[i].setY(j, TimeDomainYValues[i][j] / 32768);
+				}
 			}
+			timeWglp.update();
+		} else {
+			initTimeCanvas();
+		}
 
-			wglp.update();
-
-			// for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-			// 	timeDatasets.push({
-			// 		pointRadius: 0,
-			// 		data: TimeDomainYValues[channelIndex]
-			// 	});
-			// }
-
-			// TimeDomainChart.data.datasets = timeDatasets;
-			// TimeDomainChart.data.labels = TimeDomainXValues;
-			// TimeDomainChart.update();
-			let freqDatasets = [];
-			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-				freqDatasets.push({
-					pointRadius: 0,
-					data: FreqDomainYValues[channelIndex]
-				});
+		if (FreqMounted) {
+			let freqNumChannels = FreqDomainYValues.length;
+			for (let i = 0; i < freqNumChannels; i++) {
+				for (let j = 0; j < timeChunkSize; j++) {
+					freqLines[i].setY(j, FreqDomainYValues[i][j] / 32768 / 512);
+				}
 			}
-
-			FreqDomainChart.data.datasets = freqDatasets;
-			FreqDomainChart.data.labels = FreqDomainXValues;
-			FreqDomainChart.update();
+			freqWglp.update();
+		} else {
+			initFreqCanvas();
 		}
 	}
 </script>
