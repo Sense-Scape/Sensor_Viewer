@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Badge } from '@svelteuidev/core';
 </script>
 
 <section>

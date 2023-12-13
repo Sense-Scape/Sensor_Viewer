@@ -1,27 +1,21 @@
 <script lang="ts" defer>
-	import Chart from 'chart.js/auto';
 	import { onMount } from 'svelte';
-	import { writable } from 'svelte/store';
 	import { Badge } from '@svelteuidev/core';
 	import { WebglPlot, WebglLine, ColorRGBA } from 'webgl-plot';
 
 	// Define the props expected by SensorGroup
-	export let timeSampleRate: number = -1;
-	export let timeChunkSize: number = -1;
-	export let freqSampleRate: number = -1;
-	export let freqChunkSize: number = -1;
-	export let sourceIdentifier: string = '-';
+	export let timeSampleRate = -1;
+	export let timeChunkSize = -1;
+	export let freqSampleRate = -1;
+	export let freqChunkSize = -1;
+	export let sourceIdentifier = '-';
 
-	let ctxTime: HTMLElement;
 	let TimeDomainChart;
 	export let TimeDomainYValues: number[][] = [];
-	export let TimeDomainXValues: number[] = [];
 	export let timeID: string;
 
-	let ctxFreq: HTMLElement;
 	let FreqDomainChart;
 	export let FreqDomainYValues: number[][] = [];
-	export let FreqDomainXValues: number[] = [];
 
 	$: TimeMounted = false;
 	$: FreqMounted = false;
@@ -156,18 +150,6 @@
 </div>
 
 <style>
-	.sensorGroup {
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		height: 100%;
-	}
-
-	.sensorGroupTitle {
-		text-align: center;
-		width: 100%;
-		height: 10%;
-	}
 	.graphSuperGroup {
 		display: flex;
 		flex-direction: row;
@@ -188,12 +170,6 @@
 	.parameterContainer {
 		display: flex;
 		flex-direction: row;
-		width: 100%;
-	}
-	.parameter {
-		text-align: center;
-		max-width: 100%;
-		max-height: 100%;
 		width: 100%;
 	}
 </style>
