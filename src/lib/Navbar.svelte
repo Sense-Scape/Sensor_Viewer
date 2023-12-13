@@ -1,3 +1,6 @@
+<script lang="ts">
+</script>
+
 <section>
 	<nav>
 		<a href="/">Home</a>

@@ -1,171 +1,120 @@
 <script lang="ts">
-	import Chart from 'chart.js/auto';
+	import SensorGroup from '$lib/SensorGroup.svelte';
 	import { onMount } from 'svelte';
+	import { Button, Badge, Stack } from '@svelteuidev/core';
 
-	// Setting up of time domain plot
-	let TimeDomainChart;
-	let TimeDomainYValues = [0];
-	let TimeDomainXValues = [0];
-	let ctxTime;
+	// Create a writable store initialized as an empty object (to mimic a map)
+	var mapData = [];
 
-	export let timeSampleRate = 'X';
-	export let timeChunkSize = 'X';
+	function handleClick(i) {
+		mapData[i].display = !mapData[i].display;
+	}
 
-	let FreqDomainChart;
-	let FreqDomainYValues = [0];
-	let FreqDomainXValues = [0];
-	let ctxFreq;
+	function checkIfActive(key) {
+		let index = -1;
+		for (let i = 0; i < mapData.length; i++) {
+			if (JSON.stringify(mapData[i].key) === JSON.stringify(key)) {
+				index = i;
+				break;
+			}
+		}
 
-	export let freqSampleRate = 'X';
-	export let freqChunkSize = 'X';
+		if (index == -1) {
+			return true;
+		} else {
+			return mapData[index].display;
+		}
+	}
+	function updateItemInMap(key, value) {
+		// Start by checking if we have seen this source identifier before
+		let index = -1;
+		for (let i = 0; i < mapData.length; i++) {
+			if (JSON.stringify(mapData[i].key) === JSON.stringify(key)) {
+				index = i;
+				break;
+			}
+		}
+		// If not add it to our array
+		if (index == -1) {
+			if (mapData.length == 0) {
+				index = 0;
+				mapData[index] = {
+					key: key,
+					value: value,
+					display: false
+				};
+			} else {
+				index = mapData.length;
 
-	// Callback function used to connect to the websocket, retrieve data
-	// and update the time domain plot
-	$: {
-		if (typeof window !== 'undefined') {
-			// if (true) {
-			// First we try connect to the websocket and listen
-			// To the TimeChunk topic and start listening
-			// }
+				mapData[index] = {
+					key: key,
+					value: value
+				};
+			}
+		} else {
+			// If we have seen it, update its values
+			if (mapData[index].display) {
+				for (const key in value) {
+					mapData[index].value[key] = JSON.parse(JSON.stringify(value[key]));
+				}
+			}
 		}
 	}
 
 	// Create the time domain chart and link mount it to the HTML canvas
 	onMount(() => {
 		const TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
-		let parsedData = null;
-		let datasets = [];
+
 		TimeWebSocket.addEventListener('message', async (event) => {
-			// Check if parsed data exists, otherwise parse it once
-			if (!parsedData) {
-				const receivedMessage = event.data;
-				parsedData = JSON.parse(receivedMessage);
+			var timeParsedData = JSON.parse(event.data);
+			let timeDatasets = [];
 
-				// Create datasets array
-				const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
-				for (
-					let channelIndex = 0;
-					channelIndex < parsedData['TimeChunk']['NumChannels'];
-					channelIndex++
-				) {
-					const dataset = {
-						labels: undefined,
-						data: [],
-						borderColor: colors[channelIndex],
-						fill: false
-					};
-					datasets.push(dataset);
-				}
+			if (!checkIfActive(timeParsedData['TimeChunk']['SourceIdentifier'])) {
+				return;
 			}
-
-			const newData = JSON.parse(event.data)['TimeChunk']['Channels'];
-			const numChannels = JSON.parse(event.data)['TimeChunk']['NumChannels'];
+			// Convert data to array
+			const newData = timeParsedData['TimeChunk']['Channels'];
+			const numChannels = timeParsedData['TimeChunk']['NumChannels'];
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-				datasets[channelIndex].data = newData[channelIndex];
+				timeDatasets[channelIndex] = newData[channelIndex];
 			}
 
-			// Update chart data efficiently
-			TimeDomainChart.data.datasets = datasets;
-			TimeDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
-			TimeDomainChart.update();
-
-			if (timeSampleRate !== JSON.parse(event.data)['TimeChunk']['SampleRate']) {
-				timeSampleRate = JSON.parse(event.data)['TimeChunk']['SampleRate'];
-			}
-			if (timeChunkSize !== JSON.parse(event.data)['TimeChunk']['ChunkSize']) {
-				timeChunkSize = JSON.parse(event.data)['TimeChunk']['ChunkSize'];
-			}
-		});
-
-		ctxTime = document.getElementById('TimeDomainChart');
-		TimeDomainChart = new Chart(ctxTime, {
-			type: 'line',
-			data: {
-				labels: TimeDomainXValues,
-				datasets: [
-					{
-						data: TimeDomainYValues,
-						borderColor: 'red',
-						fill: false
-					}
-				]
-			},
-			options: {
-				legend: { display: false },
-				animation: {
-					// Disable animations
-					duration: 1 // Set the duration to 0 for all animations
-				}
-			}
+			updateItemInMap(timeParsedData['TimeChunk']['SourceIdentifier'], {
+				timeSampleRate: timeParsedData['TimeChunk']['SampleRate'],
+				timeChunkSize: timeParsedData['TimeChunk']['ChunkSize'],
+				sourceIdentifier: timeParsedData['TimeChunk']['SourceIdentifier'],
+				TimeDomainYValues: timeDatasets,
+				TimeDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1),
+				timeID: timeParsedData['TimeChunk']['SourceIdentifier'] + '-time',
+				freqID: timeParsedData['TimeChunk']['SourceIdentifier'] + '-freq'
+			});
 		});
 
 		const FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
 		let FreqParsedData = null;
 		let freqDatasets = [];
-
 		FreqWebSocket.addEventListener('message', async (event) => {
-			// Check if parsed data exists, otherwise parse it once
-			if (!FreqParsedData) {
-				const receivedMessage = event.data;
-				FreqParsedData = JSON.parse(receivedMessage);
+			FreqParsedData = JSON.parse(event.data);
 
-				// Create datasets array
-				const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
-				for (
-					let channelIndex = 0;
-					channelIndex < FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
-					channelIndex++
-				) {
-					const dataset = {
-						labels: undefined,
-						data: [],
-						borderColor: colors[channelIndex],
-						fill: false
-					};
-					freqDatasets.push(dataset);
-				}
+			if (!checkIfActive(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'])) {
+				return;
 			}
 
-			// Update datasets with new data
-			const newData = JSON.parse(event.data)['FFTMagnitudeChunk']['Channels'];
-			const numChannels = JSON.parse(event.data)['FFTMagnitudeChunk']['NumChannels'];
+			const newData = FreqParsedData['FFTMagnitudeChunk']['Channels'];
+			const numChannels = FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-				freqDatasets[channelIndex].data = newData[channelIndex];
+				freqDatasets[channelIndex] = newData[channelIndex];
 			}
 
-			// Update chart data efficiently
-			FreqDomainChart.data.datasets = freqDatasets;
-			FreqDomainChart.data.labels = Array.from({ length: 512 }, (_, index) => index + 1);
-			FreqDomainChart.update();
-
-			if (freqSampleRate !== JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate']) {
-				freqSampleRate = JSON.parse(event.data)['FFTMagnitudeChunk']['SampleRate'];
-			}
-			if (freqChunkSize !== JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize']) {
-				freqChunkSize = JSON.parse(event.data)['FFTMagnitudeChunk']['ChunkSize'];
-			}
-		});
-
-		ctxFreq = document.getElementById('FreqDomainChart');
-		FreqDomainChart = new Chart(ctxFreq, {
-			type: 'line',
-			data: {
-				labels: FreqDomainXValues,
-				datasets: [
-					{
-						data: FreqDomainYValues,
-						borderColor: 'red',
-						fill: false
-					}
-				]
-			},
-			options: {
-				legend: { display: false },
-				animation: {
-					// Disable animations
-					duration: 1 // Set the duration to 0 for all animations
-				}
-			}
+			updateItemInMap(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'], {
+				freqSampleRate: FreqParsedData['FFTMagnitudeChunk']['SampleRate'],
+				freqChunkSize: FreqParsedData['FFTMagnitudeChunk']['ChunkSize'],
+				sourceIdentifier: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'],
+				FreqDomainYValues: freqDatasets,
+				FreqDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1),
+				freqID: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'] + '-freq',
+				timeID: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'] + '-time'
+			});
 		});
 	});
 </script>
@@ -194,62 +143,54 @@
 </svelte:head>
 
 <div>
-	<!-- <div class="pageContainer"> -->
-	<div class="graphContainer">
-		<div class="graphGroup">
-			<div class="parameterContainer">
-				<p class="parameter">Sample Rate: {timeSampleRate}</p>
-				<p class="parameter">Chunk Size: {timeChunkSize}</p>
-			</div>
-			<div>
-				<canvas class="canvas" bind:this={TimeDomainChart} id="TimeDomainChart" />
-			</div>
+	<div class="container">
+		<div class="spacer">
+			<Stack align="center" spacing="xs">
+				<Badge color="gray" size="xl" radius="lg">Device ID</Badge>
+				{#each mapData as data, i}
+					<div class="Button">
+						<Button
+							variant="light"
+							color="gray"
+							size="sm"
+							ripple
+							on:click={handleClick.bind(this, i)}>{data.key}</Button
+						>
+					</div>
+				{/each}
+			</Stack>
 		</div>
-		<div class="graphGroup">
-			<div class="parameterContainer">
-				<p class="parameter">Sample Rate: {freqSampleRate}</p>
-				<p class="parameter">Chunk Size: {freqChunkSize}</p>
-			</div>
-			<div>
-				<canvas class="canvas" bind:this={FreqDomainChart} id="FreqDomainChart" />
-			</div>
+		<div class="list2" id="sensors">
+			{#each mapData as data}
+				{#if data.display}
+					<SensorGroup {...data.value} />
+				{/if}
+			{/each}
 		</div>
 	</div>
-	<!-- </div> -->
 </div>
 
 <style>
-	.graphContainer {
+	.Button {
 		display: flex;
-		flex-direction: row;
-		width: 100%;
-	}
-
-	.graphGroup {
-		width: 50%;
-		padding: 10px;
-	}
-	.canvas {
-		max-width: 100%; /* Set desired width for each canvas */
-		max-height: 100%;
-		width: 100%;
-	}
-
-	.parameterContainer {
-		display: flex;
-		/* justify-content: space-between; */
-		flex-direction: row;
+		justify-content: center;
 		align-items: center;
-		max-height: 100%;
-		max-width: 100%;
-		width: 100%;
 	}
-	.parameter {
+
+	.spacer {
+		flex-direction: row;
+		width: 20%;
+		height: 100%;
+	}
+
+	.list2 {
+		flex-direction: row;
+		width: 80%;
+		height: 100%;
+	}
+
+	.container {
 		display: flex;
 		flex-direction: row;
-		align-items: left;
-		max-height: 100%;
-		max-width: 10%;
-		width: 100%;
 	}
 </style>
