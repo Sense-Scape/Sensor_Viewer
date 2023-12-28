@@ -17,20 +17,13 @@
 	 */
 	function IsPlotActive(sourceIdentifier) {
 		// First we check if we have seen this source identifier before
-		let index = -1;
 		for (let i = 0; i < mapData.length; i++) {
 			if (JSON.stringify(mapData[i].sourceIdentifier) === JSON.stringify(sourceIdentifier)) {
-				index = i;
-				break;
+				return mapData[i].display;
 			}
 		}
 		// Process in the case we have never seen this identifier before
-		if (index == -1) {
-			return true;
-		} else {
-			// Otherwise process normally
-			return mapData[index].display;
-		}
+		return true;
 	}
 	function updateItemInMap(ChunkSourceIdentifier, ChunkData) {
 		// Start by checking if we have seen this source identifier before
@@ -62,7 +55,8 @@
 		} else {
 			// If we have seen it, update its values
 			if (mapData[index].display) {
-				console.log('updating');
+				console.log('updating' + JSON.stringify(index));
+				console.log(JSON.parse(JSON.stringify(ChunkData)));
 				for (const ChunkKey in ChunkData) {
 					mapData[index].value[ChunkKey] = JSON.parse(JSON.stringify(ChunkData[ChunkKey]));
 				}
