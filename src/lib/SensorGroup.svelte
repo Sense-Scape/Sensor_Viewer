@@ -74,14 +74,16 @@
 			return;
 		}
 
+		if (!freqWglp) {
+			freqWglp = new WebglPlot(FreqDomainChart);
+		}
+
 		FreqDomainChart = document.getElementById(freqID);
 		const devicePixelRatio = window.devicePixelRatio || 2;
 		FreqDomainChart.width = FreqDomainChart.clientWidth * devicePixelRatio;
 		FreqDomainChart.height = FreqDomainChart.clientHeight * devicePixelRatio;
 
 		freqNumX = freqChunkSize;
-
-		freqWglp = new WebglPlot(FreqDomainChart);
 
 		const freqNumChannels = FreqDomainYValues.length;
 
