@@ -10,52 +10,55 @@
 		mapData[i].display = !mapData[i].display;
 	}
 
-	function checkIfActive(key) {
+	/**
+	 * This function checks if a plot is active or not
+	 * @param {key} key of the plot of interest.
+	 * @returns {bool} Whether the plot is active or not.
+	 */
+	function IsPlotActive(sourceIdentifier) {
+		// First we check if we have seen this source identifier before
+		for (let i = 0; i < mapData.length; i++) {
+			if (JSON.stringify(mapData[i].sourceIdentifier) === JSON.stringify(sourceIdentifier)) {
+				return mapData[i].display;
+			}
+		}
+		// Process in the case we have never seen this identifier before
+		return true;
+	}
+	function updateItemInMap(ChunkSourceIdentifier, ChunkData) {
+		// Start by checking if we have seen this source identifier before
 		let index = -1;
 		for (let i = 0; i < mapData.length; i++) {
-			if (JSON.stringify(mapData[i].key) === JSON.stringify(key)) {
+			if (JSON.stringify(mapData[i].sourceIdentifier) === JSON.stringify(ChunkSourceIdentifier)) {
 				index = i;
 				break;
 			}
 		}
 
-		if (index == -1) {
-			return true;
-		} else {
-			return mapData[index].display;
-		}
-	}
-	function updateItemInMap(key, value) {
-		// Start by checking if we have seen this source identifier before
-		let index = -1;
-		for (let i = 0; i < mapData.length; i++) {
-			if (JSON.stringify(mapData[i].key) === JSON.stringify(key)) {
-				index = i;
-				break;
-			}
-		}
 		// If not add it to our array
 		if (index == -1) {
 			if (mapData.length == 0) {
 				index = 0;
 				mapData[index] = {
-					key: key,
-					value: value,
+					sourceIdentifier: ChunkSourceIdentifier,
+					value: ChunkData,
 					display: false
 				};
 			} else {
 				index = mapData.length;
-
 				mapData[index] = {
-					key: key,
-					value: value
+					sourceIdentifier: ChunkSourceIdentifier,
+					value: ChunkData,
+					display: false
 				};
 			}
 		} else {
 			// If we have seen it, update its values
 			if (mapData[index].display) {
-				for (const key in value) {
-					mapData[index].value[key] = JSON.parse(JSON.stringify(value[key]));
+				console.log('updating' + JSON.stringify(index));
+				console.log(JSON.parse(JSON.stringify(ChunkData)));
+				for (const ChunkKey in ChunkData) {
+					mapData[index].value[ChunkKey] = JSON.parse(JSON.stringify(ChunkData[ChunkKey]));
 				}
 			}
 		}
@@ -68,8 +71,8 @@
 		TimeWebSocket.addEventListener('message', async (event) => {
 			var timeParsedData = JSON.parse(event.data);
 			let timeDatasets = [];
-
-			if (!checkIfActive(timeParsedData['TimeChunk']['SourceIdentifier'])) {
+			// If a plot is not active do not process its data to save time
+			if (!IsPlotActive(timeParsedData['TimeChunk']['SourceIdentifier'])) {
 				return;
 			}
 			// Convert data to array
@@ -84,9 +87,8 @@
 				timeChunkSize: timeParsedData['TimeChunk']['ChunkSize'],
 				sourceIdentifier: timeParsedData['TimeChunk']['SourceIdentifier'],
 				TimeDomainYValues: timeDatasets,
-				TimeDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1),
-				timeID: timeParsedData['TimeChunk']['SourceIdentifier'] + '-time',
-				freqID: timeParsedData['TimeChunk']['SourceIdentifier'] + '-freq'
+				timeID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-time',
+				freqID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-freq'
 			});
 		});
 
@@ -95,8 +97,8 @@
 		let freqDatasets = [];
 		FreqWebSocket.addEventListener('message', async (event) => {
 			FreqParsedData = JSON.parse(event.data);
-
-			if (!checkIfActive(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'])) {
+			// If a plot is not active do not process its data to save time
+			if (!IsPlotActive(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'])) {
 				return;
 			}
 
@@ -111,9 +113,8 @@
 				freqChunkSize: FreqParsedData['FFTMagnitudeChunk']['ChunkSize'],
 				sourceIdentifier: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'],
 				FreqDomainYValues: freqDatasets,
-				FreqDomainXValues: Array.from({ length: 512 }, (_, index) => index + 1),
-				freqID: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'] + '-freq',
-				timeID: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'] + '-time'
+				freqID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-freq',
+				timeID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-time'
 			});
 		});
 	});
@@ -154,7 +155,7 @@
 							color="gray"
 							size="sm"
 							ripple
-							on:click={handleClick.bind(this, i)}>{data.key}</Button
+							on:click={handleClick.bind(this, i)}>{data.sourceIdentifier}</Button
 						>
 					</div>
 				{/each}

@@ -37,70 +37,68 @@
 	});
 
 	function initTimeCanvas() {
+		// Ensure HMTL is loaded in
 		if (!document.getElementById(timeID)) {
 			return;
 		}
-
+		// Ensure we processed some data (therefore var set)
 		if (!TimeDomainYValues.length) {
 			return;
 		}
+		// Create the "class" wise context only once
+		if (!timeWglp) {
+			timeWglp = new WebglPlot(TimeDomainChart);
+			TimeMounted = true;
 
-		TimeDomainChart = document.getElementById(timeID);
-		const devicePixelRatio = window.devicePixelRatio || 2;
-		TimeDomainChart.width = TimeDomainChart.clientWidth * devicePixelRatio;
-		TimeDomainChart.height = TimeDomainChart.clientHeight * devicePixelRatio;
+			TimeDomainChart = document.getElementById(timeID);
+			const devicePixelRatio = window.devicePixelRatio || 2;
+			TimeDomainChart.width = TimeDomainChart.clientWidth * devicePixelRatio;
+			TimeDomainChart.height = TimeDomainChart.clientHeight * devicePixelRatio;
+		}
 
-		timeNumX = timeChunkSize;
-		timeWglp = new WebglPlot(TimeDomainChart);
-
-		const numChannels = TimeDomainYValues.length;
-
-		for (let i = 0; i < numChannels; i++) {
+		// Iterate and add all channels to add lines
+		for (let i = 0; i < TimeDomainYValues.length; i++) {
 			timeColor = new ColorRGBA(Math.random(), Math.random(), Math.random(), 1);
-			let line = new WebglLine(timeColor, timeNumX);
+			let line = new WebglLine(timeColor, timeChunkSize);
 			line.arrangeX();
 			timeWglp.addLine(line);
 			timeLines.push(line);
 		}
-		TimeMounted = true;
 	}
 
 	function initFreqCanvas() {
+		// Ensure HMTL is loaded in
 		if (!document.getElementById(timeID)) {
 			return;
 		}
-
+		// Ensure we processed some data (therefore var set)
 		if (!FreqDomainYValues.length) {
 			return;
 		}
+		// Create the "class" wise context only once
+		if (!freqWglp) {
+			freqWglp = new WebglPlot(FreqDomainChart);
+			FreqMounted = true;
 
-		FreqDomainChart = document.getElementById(freqID);
-		const devicePixelRatio = window.devicePixelRatio || 2;
-		FreqDomainChart.width = FreqDomainChart.clientWidth * devicePixelRatio;
-		FreqDomainChart.height = FreqDomainChart.clientHeight * devicePixelRatio;
+			FreqDomainChart = document.getElementById(freqID);
+			const devicePixelRatio = window.devicePixelRatio || 2;
+			FreqDomainChart.width = FreqDomainChart.clientWidth * devicePixelRatio;
+			FreqDomainChart.height = FreqDomainChart.clientHeight * devicePixelRatio;
+		}
 
-		freqNumX = freqChunkSize;
-
-		freqWglp = new WebglPlot(FreqDomainChart);
-
-		const freqNumChannels = FreqDomainYValues.length;
-
-		for (let i = 0; i < freqNumChannels; i++) {
+		// Iterate and add all channels to lines
+		for (let i = 0; i < FreqDomainYValues.length; i++) {
 			freqColor = new ColorRGBA(Math.random(), Math.random(), Math.random(), 1);
-			let line = new WebglLine(freqColor, freqNumX);
+			let line = new WebglLine(freqColor, freqChunkSize);
 			line.arrangeX();
 			freqWglp.addLine(line);
 			freqLines.push(line);
 		}
-
-		console.log(freqLines);
-		FreqMounted = true;
 	}
 
 	$: {
 		if (TimeMounted) {
-			let timeNumChannels = TimeDomainYValues.length;
-			for (let i = 0; i < timeNumChannels; i++) {
+			for (let i = 0; i < TimeDomainYValues.length; i++) {
 				for (let j = 0; j < timeChunkSize; j++) {
 					timeLines[i].setY(j, TimeDomainYValues[i][j] / 32768);
 				}
@@ -111,8 +109,7 @@
 		}
 
 		if (FreqMounted) {
-			let freqNumChannels = FreqDomainYValues.length;
-			for (let i = 0; i < freqNumChannels; i++) {
+			for (let i = 0; i < FreqDomainYValues.length; i++) {
 				for (let j = 0; j < timeChunkSize; j++) {
 					freqLines[i].setY(j, FreqDomainYValues[i][j] / 32768 / 512);
 				}

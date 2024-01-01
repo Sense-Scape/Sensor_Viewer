@@ -50,6 +50,7 @@
 		"socket.io": "^4.7.2",
 		"socket.io-client": "^4.7.2",
 		"svelte-chartjs": "^3.1.2",
+		"svelte-sound": "^0.6.0",
 		"webgl-plot": "^0.7.1"
 	}
 }
