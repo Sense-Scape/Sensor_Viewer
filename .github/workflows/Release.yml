@@ -22,23 +22,16 @@ jobs:
       
     - name: Install dependencies
       run: npm install
-      
-    - name: Build Svelte app
-      run: npm run build
 
     - name: Zip Docs and Build
       run: |
         sudo zip -r ${{env.BUILD_NAME}}.zip ./*
-    
-    - name: TMP
-      run: |
-        cd .svelte-kit
-        ls
       
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
           ${{env.BUILD_NAME}}.zip
+          
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
