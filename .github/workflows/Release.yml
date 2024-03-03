@@ -30,14 +30,14 @@ jobs:
       run: |
         cd .svelte-kit
         sudo zip -r ${{env.BUILD_NAME}}.zip ./*
-        ls
-        cd ..
-        ls
+    
+    - name: TMP
+      run: ls
       
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          ./${{env.BUILD_NAME}}.zip
+          ${{env.BUILD_NAME}}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
