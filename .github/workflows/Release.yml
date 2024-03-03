@@ -28,7 +28,6 @@ jobs:
 
     - name: Zip Docs and Build
       run: |
-        cd .svelte-kit
         sudo zip -r ${{env.BUILD_NAME}}.zip ./*
     
     - name: TMP
@@ -40,6 +39,6 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          .svelte-kit/${{env.BUILD_NAME}}.zip
+          ${{env.BUILD_NAME}}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
