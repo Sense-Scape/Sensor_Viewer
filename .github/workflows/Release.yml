@@ -1,0 +1,26 @@
+name: Build Svelte App on Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build Svelte App
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '21.6.2' # You can change the Node.js version as needed
+      
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Build Svelte app
+      run: npm run build
+      
