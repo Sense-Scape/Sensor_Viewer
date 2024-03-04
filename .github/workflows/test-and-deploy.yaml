@@ -29,15 +29,6 @@ jobs:
         with:
           node-version: v21.6.2
           cache: npm
-      - name: Cache npm modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            ./node_modules
-            ./web/node_modules
-            ./.svelte-kit
-            ./web/.svelte-kit
-          key: npm-${{ hashFiles('**/package-lock.json') }}
       - name: Install npm
         run: npm clean-install
       - name: Build project
@@ -53,15 +44,6 @@ jobs:
         with:
           node-version: v21.6.2
           cache: npm
-      - name: Cache npm modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            ./node_modules
-            ./web/node_modules
-            ./.svelte-kit
-            ./web/.svelte-kit
-          key: npm-${{ hashFiles('**/package-lock.json') }}
       - name: Install npm
         run: npm ci
       - name: Run unit tests
@@ -82,15 +64,6 @@ jobs:
         with:
           node-version: v21.6.2
           cache: npm
-      - name: Cache npm modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            ./node_modules
-            ./web/node_modules
-            ./.svelte-kit
-            ./web/.svelte-kit
-          key: npm-${{ hashFiles('**/package-lock.json') }}
       - name: Install npm
         run: npm ci
       - name: Pull Vercel Environment Information
@@ -111,15 +84,6 @@ jobs:
         with:
           node-version: v21.6.2
           cache: npm
-      - name: Cache npm modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            ./node_modules
-            ./web/node_modules
-            ./.svelte-kit
-            ./web/.svelte-kit
-          key: npm-${{ hashFiles('**/package-lock.json') }}
       - name: Install npm
         run: npm ci
       - name: Pull Vercel Environment Information

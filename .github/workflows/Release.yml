@@ -2,7 +2,7 @@ name: Publish Svelte App on Release
 
 on:
   release:
-    types: [published]
+    types: [prereleased, published]
 env:
   BUILD_NAME: Sensor_Viewer
 
@@ -19,16 +19,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '21.6.2' # You can change the Node.js version as needed
-
-      - name: Cache npm modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            ./node_modules
-            ./web/node_modules
-            ./.svelte-kit
-            ./web/.svelte-kit
-          key: npm-${{ hashFiles('**/package-lock.json') }}
+          cache: npm
 
       - run: npm ci
 
