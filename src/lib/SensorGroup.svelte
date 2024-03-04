@@ -22,12 +22,10 @@
 
 	export let freqID: string;
 
-	let timeNumX;
 	let timeColor;
 	let timeLines = [];
 	let timeWglp;
 
-	let freqNumX;
 	let freqColor;
 	let freqLines = [];
 	let freqWglp;
