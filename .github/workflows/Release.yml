@@ -1,4 +1,4 @@
-name: Build Svelte App on Release
+name: Publish Svelte App on Release
 
 on:
   release:
@@ -8,21 +8,35 @@ env:
 
 jobs:
   build:
-    name: Build Svelte App
+    name: Build and publish
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '21.6.2' # You can change the Node.js version as needed
 
+      - name: Cache npm modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./node_modules
+            ./web/node_modules
+            ./.svelte-kit
+            ./web/.svelte-kit
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+
+      - run: npm ci
+
+      - run: npm run build
+
       - name: Zip Docs and Build
         run: |
-          sudo zip -r ${{env.BUILD_NAME}}.zip ./*
+          sudo zip -r ${{env.BUILD_NAME}}.zip ./build
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
