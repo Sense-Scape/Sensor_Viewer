@@ -4,9 +4,9 @@ test('navbar routes when clicked', async ({ page, baseURL }) => {
 	await page.goto('/');
 	await expect(await page.getByRole('navigation').count()).toBe(1);
 
-	await Promise.all([page.waitForEvent('framenavigated'), page.getByText('About').click()]);
+	await Promise.all([page.waitForEvent('framenavigated'), page.getByText('Map').click()]);
 
-	await expect(page.url()).toBe(baseURL + '/about');
+	await expect(page.url()).toBe(baseURL + '/map');
 
 	await Promise.all([page.waitForEvent('framenavigated'), page.getByText('Home').click()]);
 
@@ -14,7 +14,7 @@ test('navbar routes when clicked', async ({ page, baseURL }) => {
 
 	await Promise.all([page.waitForEvent('framenavigated'), page.goBack()]);
 
-	await expect(page.url()).toBe(baseURL + '/about');
+	await expect(page.url()).toBe(baseURL + '/map');
 
 	await Promise.all([page.waitForEvent('framenavigated'), page.goForward()]);
 
