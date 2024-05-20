@@ -4,13 +4,13 @@
 	import Marker from '$lib/Marker.svelte';
 	import Popup from '$lib/Popup.svelte';
 
-	const initialView: LatLngExpression = [51.514244, 7.468429]; // Dortmund, Germany
+	const initialView: LatLngExpression = [-33.918861, 18.4233]; // Dortmund, Germany
 	const markerLocations: Array<LatLngExpression> = [
 		[51.513870009926, 7.473969975241] // ShipBit Office
 	];
 </script>
 
-<div class="w-full h-screen">
+<div class="w-screen h-screen">
 	<Leaflet view={initialView} zoom={14}>
 		{#each markerLocations as latLng}
 			<Marker {latLng} width={40} height={40}>
@@ -35,3 +35,10 @@
 		{/each}
 	</Leaflet>
 </div>
+
+<style>
+	.container {
+		display: flex;
+		flex-direction: row;
+	}
+</style>
