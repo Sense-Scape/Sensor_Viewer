@@ -48,16 +48,15 @@
 	}
 </script>
 
-<div bind:this={mapElement}>
-	map
-	<!-- {#if map}
+<div class="container" bind:this={mapElement}>
+	{#if map}
 		<slot />
-	{/if} -->
+	{/if}
 </div>
 
 <style>
 	.container {
-		display: flex;
-		flex-direction: row;
+		width: 100%;
+		height: calc(100vh);
 	}
 </style>
