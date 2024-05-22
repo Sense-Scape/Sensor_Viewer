@@ -3,16 +3,85 @@
 	import Leaflet from '$lib/Leaflet.svelte';
 	import Marker from '$lib/Marker.svelte';
 	import Popup from '$lib/Popup.svelte';
+	import { onMount } from 'svelte';
 
-	const initialView: LatLngExpression = [-33.918861, 18.4233]; // Dortmund, Germany
-	const markerLocations: Array<LatLngExpression> = [
-		[-33.918861, 18.4233] // ShipBit Office
-	];
+	const initialView: LatLngExpression = [-33.918861, 18.4233];
+	$: markerLocations = [];
+
+	var mapData = [];
+
+	function updateItemInMap(ChunkSourceIdentifier, ChunkData) {
+		// Start by checking if we have seen this source identifier before
+		console.log(ChunkData);
+		let index = -1;
+		for (let i = 0; i < mapData.length; i++) {
+			if (JSON.stringify(mapData[i].sourceIdentifier) === JSON.stringify(ChunkSourceIdentifier)) {
+				index = i;
+				break;
+			}
+		}
+
+		// If not add it to our array
+		if (index == -1) {
+			if (mapData.length == 0) {
+				index = 0;
+				mapData[index] = {
+					sourceIdentifier: ChunkSourceIdentifier,
+					value: ChunkData
+				};
+			} else {
+				index = mapData.length;
+				mapData[index] = {
+					sourceIdentifier: ChunkSourceIdentifier,
+					value: ChunkData
+				};
+			}
+		} else {
+			// If we have seen it, update its values
+			// console.log('updating' + JSON.stringify(index));
+			// console.log(JSON.parse(JSON.stringify(ChunkData)));
+			mapData[index].value = ChunkData;
+		}
+
+		var markerLocationsTMP: Array<LatLngExpression> = [];
+		for (let i = 0; i < mapData.length; i++) {
+			var longitude = Number(mapData[i].value.Longitude);
+			var latitude = Number(mapData[i].value.Latitude);
+
+			if (Number(mapData[i].value.IsNorth) === 0) {
+				latitude = latitude * -1;
+			}
+
+			if (Number(mapData[i].value.IsWest) === 0) {
+				longitude = longitude * -1;
+			}
+
+			var tmpCoords: [number, number] = [latitude, longitude];
+			markerLocationsTMP = [...markerLocationsTMP, tmpCoords];
+		}
+
+		markerLocations = markerLocationsTMP;
+	}
+
+	onMount(() => {
+		const GPSWebSocket = new WebSocket('ws://localhost:10100/DataTypes/GPSChunk');
+
+		GPSWebSocket.addEventListener('message', async (event) => {
+			var GPSParsedData = JSON.parse(event.data);
+
+			updateItemInMap(GPSParsedData['GPSChunk']['SourceIdentifier'], {
+				Longitude: GPSParsedData['GPSChunk']['Longitude'],
+				Latitude: GPSParsedData['GPSChunk']['Latitude'],
+				IsNorth: GPSParsedData['GPSChunk']['IsNorth'],
+				IsWest: GPSParsedData['GPSChunk']['IsWest']
+			});
+		});
+	});
 </script>
 
 <Leaflet view={initialView} zoom={14}>
 	{#each markerLocations as latLng}
-		<Marker {latLng} width={40} height={40}>
+		<Marker {latLng} width={25} height={25}>
 			<!-- ShipBit Icon -->
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
