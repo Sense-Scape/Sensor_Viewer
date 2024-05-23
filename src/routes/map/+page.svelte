@@ -6,44 +6,44 @@
 	import { onMount } from 'svelte';
 
 	const initialView: LatLngExpression = [-33.918861, 18.4233];
-	$: markerLocations = [];
+	$: currentMarkerLocations = [];
 
 	var mapData = [];
 
-	function updateItemInMap(ChunkSourceIdentifier, ChunkData) {
-		// Start by checking if we have seen this source identifier before
-		console.log(ChunkData);
+	function GetIdentifierIndex(sourceIdentifier) {
 		let index = -1;
 		for (let i = 0; i < mapData.length; i++) {
-			if (JSON.stringify(mapData[i].sourceIdentifier) === JSON.stringify(ChunkSourceIdentifier)) {
+			if (JSON.stringify(mapData[i].sourceIdentifier) === JSON.stringify(sourceIdentifier)) {
 				index = i;
 				break;
 			}
 		}
 
-		// If not add it to our array
-		if (index == -1) {
+		return index;
+	}
+
+	function UpdateMapData(dataIndex, sourceIdentifier, chunkData) {
+		if (dataIndex == -1) {
 			if (mapData.length == 0) {
-				index = 0;
-				mapData[index] = {
-					sourceIdentifier: ChunkSourceIdentifier,
-					value: ChunkData
+				dataIndex = 0;
+				mapData[dataIndex] = {
+					sourceIdentifier: sourceIdentifier,
+					value: chunkData
 				};
 			} else {
-				index = mapData.length;
-				mapData[index] = {
-					sourceIdentifier: ChunkSourceIdentifier,
-					value: ChunkData
+				dataIndex = mapData.length;
+				mapData[dataIndex] = {
+					sourceIdentifier: sourceIdentifier,
+					value: chunkData
 				};
 			}
 		} else {
-			// If we have seen it, update its values
-			// console.log('updating' + JSON.stringify(index));
-			// console.log(JSON.parse(JSON.stringify(ChunkData)));
-			mapData[index].value = ChunkData;
+			mapData[dataIndex].value = chunkData;
 		}
+	}
 
-		var markerLocationsTMP: Array<LatLngExpression> = [];
+	function UpdateLeafletMarkers() {
+		var newMarkerLocations: Array<LatLngExpression> = [];
 		for (let i = 0; i < mapData.length; i++) {
 			var longitude = Number(mapData[i].value.Longitude);
 			var latitude = Number(mapData[i].value.Latitude);
@@ -52,15 +52,22 @@
 				latitude = latitude * -1;
 			}
 
-			if (Number(mapData[i].value.IsWest) === 0) {
+			if (Number(mapData[i].value.IsWest) !== 0) {
 				longitude = longitude * -1;
 			}
 
-			var tmpCoords: [number, number] = [latitude, longitude];
-			markerLocationsTMP = [...markerLocationsTMP, tmpCoords];
+			var newMarker: [number, number] = [latitude / 100, longitude / 100];
+			newMarkerLocations = [...newMarkerLocations, newMarker];
 		}
 
-		markerLocations = markerLocationsTMP;
+		currentMarkerLocations = newMarkerLocations;
+	}
+	function updateItemInMap(sourceIdentifier, chunkData) {
+		// Start by checking if we have seen this source identifier before
+
+		let dataIndex = GetIdentifierIndex(sourceIdentifier);
+		UpdateMapData(dataIndex, sourceIdentifier, chunkData);
+		UpdateLeafletMarkers();
 	}
 
 	onMount(() => {
@@ -80,7 +87,7 @@
 </script>
 
 <Leaflet view={initialView} zoom={14}>
-	{#each markerLocations as latLng}
+	{#each currentMarkerLocations as latLng}
 		<Marker {latLng} width={25} height={25}>
 			<!-- ShipBit Icon -->
 			<svg
