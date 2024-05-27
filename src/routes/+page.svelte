@@ -55,8 +55,6 @@
 		} else {
 			// If we have seen it, update its values
 			if (mapData[index].display) {
-				console.log('updating' + JSON.stringify(index));
-				console.log(JSON.parse(JSON.stringify(ChunkData)));
 				for (const ChunkKey in ChunkData) {
 					mapData[index].value[ChunkKey] = JSON.parse(JSON.stringify(ChunkData[ChunkKey]));
 				}
@@ -66,57 +64,97 @@
 
 	// Create the time domain chart and link mount it to the HTML canvas
 	onMount(() => {
-		const TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
+		const ConnectTimeWebSocket = () => {
+			const TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
 
-		TimeWebSocket.addEventListener('message', async (event) => {
-			var timeParsedData = JSON.parse(event.data);
-			let timeDatasets = [];
-			// If a plot is not active do not process its data to save time
-			if (!IsPlotActive(timeParsedData['TimeChunk']['SourceIdentifier'])) {
-				return;
-			}
-			// Convert data to array
-			const newData = timeParsedData['TimeChunk']['Channels'];
-			const numChannels = timeParsedData['TimeChunk']['NumChannels'];
-			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-				timeDatasets[channelIndex] = newData[channelIndex];
-			}
-
-			updateItemInMap(timeParsedData['TimeChunk']['SourceIdentifier'], {
-				timeSampleRate: timeParsedData['TimeChunk']['SampleRate'],
-				timeChunkSize: timeParsedData['TimeChunk']['ChunkSize'],
-				sourceIdentifier: timeParsedData['TimeChunk']['SourceIdentifier'],
-				TimeDomainYValues: timeDatasets,
-				timeID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-time',
-				freqID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-freq'
+			TimeWebSocket.addEventListener('open', () => {
+				console.log('WebSocket connected');
 			});
-		});
 
-		const FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
-		let FreqParsedData = null;
-		let freqDatasets = [];
-		FreqWebSocket.addEventListener('message', async (event) => {
-			FreqParsedData = JSON.parse(event.data);
-			// If a plot is not active do not process its data to save time
-			if (!IsPlotActive(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'])) {
-				return;
-			}
-
-			const newData = FreqParsedData['FFTMagnitudeChunk']['Channels'];
-			const numChannels = FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
-			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-				freqDatasets[channelIndex] = newData[channelIndex];
-			}
-
-			updateItemInMap(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'], {
-				freqSampleRate: FreqParsedData['FFTMagnitudeChunk']['SampleRate'],
-				freqChunkSize: FreqParsedData['FFTMagnitudeChunk']['ChunkSize'],
-				sourceIdentifier: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'],
-				FreqDomainYValues: freqDatasets,
-				freqID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-freq',
-				timeID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-time'
+			TimeWebSocket.addEventListener('close', (event) => {
+				console.log('WebSocket closed', event);
+				setTimeout(ConnectTimeWebSocket, 5000); // Attempt to reconnect after 1 second
 			});
-		});
+
+			TimeWebSocket.addEventListener('error', (error) => {
+				console.log('WebSocket error', error);
+				TimeWebSocket.close();
+			});
+
+			let timeParsedData = null;
+			let TimeDatasets = [];
+
+			TimeWebSocket.addEventListener('message', async (event) => {
+				timeParsedData = JSON.parse(event.data);
+				// If a plot is not active do not process its data to save time
+				if (!IsPlotActive(timeParsedData['TimeChunk']['SourceIdentifier'])) {
+					return;
+				}
+				// Convert data to array
+				const newData = timeParsedData['TimeChunk']['Channels'];
+				const numChannels = timeParsedData['TimeChunk']['NumChannels'];
+				for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+					TimeDatasets[channelIndex] = newData[channelIndex];
+				}
+
+				updateItemInMap(timeParsedData['TimeChunk']['SourceIdentifier'], {
+					timeSampleRate: timeParsedData['TimeChunk']['SampleRate'],
+					timeChunkSize: timeParsedData['TimeChunk']['ChunkSize'],
+					sourceIdentifier: timeParsedData['TimeChunk']['SourceIdentifier'],
+					TimeDomainYValues: TimeDatasets,
+					timeID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-time',
+					freqID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-freq'
+				});
+			});
+		};
+
+		ConnectTimeWebSocket(); // Initial connection
+
+		const ConnectFreqWebSocket = () => {
+			const FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
+
+			FreqWebSocket.addEventListener('open', () => {
+				console.log('WebSocket connected');
+			});
+
+			FreqWebSocket.addEventListener('close', (event) => {
+				console.log('WebSocket closed', event);
+				setTimeout(ConnectTimeWebSocket, 5000); // Attempt to reconnect after 1 second
+			});
+
+			FreqWebSocket.addEventListener('error', (error) => {
+				console.log('WebSocket error', error);
+				FreqWebSocket.close();
+			});
+
+			let FreqParsedData = null;
+			let FreqDatasets = [];
+
+			FreqWebSocket.addEventListener('message', async (event) => {
+				FreqParsedData = JSON.parse(event.data);
+				// If a plot is not active do not process its data to save time
+				if (!IsPlotActive(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'])) {
+					return;
+				}
+
+				const newData = FreqParsedData['FFTMagnitudeChunk']['Channels'];
+				const numChannels = FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
+				for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+					FreqDatasets[channelIndex] = newData[channelIndex];
+				}
+
+				updateItemInMap(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'], {
+					freqSampleRate: FreqParsedData['FFTMagnitudeChunk']['SampleRate'],
+					freqChunkSize: FreqParsedData['FFTMagnitudeChunk']['ChunkSize'],
+					sourceIdentifier: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'],
+					FreqDomainYValues: FreqDatasets,
+					freqID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-freq',
+					timeID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-time'
+				});
+			});
+		};
+
+		ConnectFreqWebSocket(); // Initial connection
 	});
 </script>
 

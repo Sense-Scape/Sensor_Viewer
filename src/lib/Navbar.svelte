@@ -4,7 +4,7 @@
 <section>
 	<nav>
 		<a href="/">Home</a>
-		<a href="/about">About</a>
+		<a href="/map">Map</a>
 	</nav>
 </section>
 
