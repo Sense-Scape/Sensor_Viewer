@@ -86,7 +86,6 @@
 
 			TimeWebSocket.addEventListener('message', async (event) => {
 				timeParsedData = JSON.parse(event.data);
-				TimeDatasets = [];
 				// If a plot is not active do not process its data to save time
 				if (!IsPlotActive(timeParsedData['TimeChunk']['SourceIdentifier'])) {
 					return;
