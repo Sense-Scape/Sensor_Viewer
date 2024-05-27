@@ -138,6 +138,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Sense-Scape | Map</title>
+</svelte:head>
+
 <Leaflet view={initialView} zoom={14}>
 	{#each currentMarkerLocations as latLng}
 		<Marker {latLng} width={25} height={25}>
