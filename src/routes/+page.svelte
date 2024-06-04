@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SensorGroup from '$lib/SensorGroup.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy  } from 'svelte';
 	import { Button, Badge, Stack } from '@svelteuidev/core';
 
 	// Create a writable store initialized as an empty object (to mimic a map)
@@ -42,14 +42,14 @@
 				mapData[index] = {
 					sourceIdentifier: ChunkSourceIdentifier,
 					value: ChunkData,
-					display: false
+					display: true
 				};
 			} else {
 				index = mapData.length;
 				mapData[index] = {
 					sourceIdentifier: ChunkSourceIdentifier,
 					value: ChunkData,
-					display: false
+					display: true
 				};
 			}
 		} else {
@@ -63,22 +63,24 @@
 	}
 
 	// Create the time domain chart and link mount it to the HTML canvas
-	onMount(() => {
-		const ConnectTimeWebSocket = () => {
-			const TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
+	let TimeWebSocket = null;
+	function ConnectTimeWebSocket() {
+			
+			TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
 
 			TimeWebSocket.addEventListener('open', () => {
-				console.log('WebSocket connected');
+				console.log('TimeChunk WebSocket connected');
 			});
 
 			TimeWebSocket.addEventListener('close', (event) => {
-				console.log('WebSocket closed', event);
-				setTimeout(ConnectTimeWebSocket, 5000); // Attempt to reconnect after 1 second
+				console.log('TimeChunk WebSocket closed', event);
+
 			});
 
 			TimeWebSocket.addEventListener('error', (error) => {
 				console.log('WebSocket error', error);
 				TimeWebSocket.close();
+				setTimeout(ConnectTimeWebSocket, 1000);
 			});
 
 			let timeParsedData = null;
@@ -107,19 +109,19 @@
 				});
 			});
 		};
-
-		ConnectTimeWebSocket(); // Initial connection
-
-		const ConnectFreqWebSocket = () => {
-			const FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
+	
+	let FreqWebSocket = null;
+	function ConnectFreqWebSocket() {
+			FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
 
 			FreqWebSocket.addEventListener('open', () => {
-				console.log('WebSocket connected');
+				console.log('FFTMagnitudeChunk WebSocket connected');
+
 			});
 
 			FreqWebSocket.addEventListener('close', (event) => {
 				console.log('WebSocket closed', event);
-				setTimeout(ConnectTimeWebSocket, 5000); // Attempt to reconnect after 1 second
+				setTimeout(ConnectFreqWebSocket, 5000); // Attempt to reconnect after 1 second
 			});
 
 			FreqWebSocket.addEventListener('error', (error) => {
@@ -153,9 +155,24 @@
 				});
 			});
 		};
+	
+	
+	function closeWebSockets() {
+		if (TimeWebSocket) {
+			TimeWebSocket.close();	
+		}
+		if (FreqWebSocket) {
+			FreqWebSocket.close();	
+		}
+	}
 
+	onDestroy(() => {closeWebSockets()});
+
+	onMount(() => {
+		ConnectTimeWebSocket(); // Initial connection
 		ConnectFreqWebSocket(); // Initial connection
 	});
+
 </script>
 
 <svelte:head>
