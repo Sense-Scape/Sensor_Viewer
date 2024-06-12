@@ -15,14 +15,16 @@ const config = {
 					'va.vercel-scripts.com',
 					'vercel.live',
 					// @ts-expect-error csp directives are inferred as strings https://github.com/sveltejs/kit/issues/11906
-					'ws://localhost:10100/'
+					'ws://localhost:10100/',
+					'ws://localhost:10101/',
 				],
 				'connect-src': [
 					'self',
 					'vitals.vercel-insights.com',
 					'vitals.vercel-analytics.com',
 					// @ts-expect-error csp directives are inferred as strings https://github.com/sveltejs/kit/issues/11906
-					'ws://localhost:10100/'
+					'ws://localhost:10100/',
+					'ws://localhost:10101/',
 				]
 			}
 		}
