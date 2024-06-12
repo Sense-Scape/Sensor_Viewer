@@ -63,7 +63,6 @@
 		// Start by checking if we have seen this source identifier before
 		let dataIndex = GetIdentifierIndex(StatusParsedData['SystemInfo']['StatName']);
 		UpdateMapData(dataIndex, StatusParsedData['SystemInfo']['StatName'], StatusParsedData);
-		console.log(mapData)
 	}
 
 	let StatWebSocket = null;
