@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SensorGroup from '$lib/SensorGroup.svelte';
-	import { onMount, onDestroy  } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { Button, Badge, Stack } from '@svelteuidev/core';
 
 	// Create a writable store initialized as an empty object (to mimic a map)
@@ -65,114 +65,111 @@
 	// Create the time domain chart and link mount it to the HTML canvas
 	let TimeWebSocket = null;
 	function ConnectTimeWebSocket() {
-			
-			TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
+		TimeWebSocket = new WebSocket('ws://localhost:10100/DataTypes/TimeChunk');
 
-			TimeWebSocket.addEventListener('open', () => {
-				console.log('TimeChunk WebSocket connected');
+		TimeWebSocket.addEventListener('open', () => {
+			console.log('TimeChunk WebSocket connected');
+		});
+
+		TimeWebSocket.addEventListener('close', (event) => {
+			console.log('TimeChunk WebSocket closed', event);
+		});
+
+		TimeWebSocket.addEventListener('error', (error) => {
+			console.log('WebSocket error', error);
+			TimeWebSocket.close();
+			setTimeout(ConnectTimeWebSocket, 1000);
+		});
+
+		let timeParsedData = null;
+		let TimeDatasets = [];
+
+		TimeWebSocket.addEventListener('message', async (event) => {
+			timeParsedData = JSON.parse(event.data);
+			// If a plot is not active do not process its data to save time
+			if (!IsPlotActive(timeParsedData['TimeChunk']['SourceIdentifier'])) {
+				return;
+			}
+			// Convert data to array
+			const newData = timeParsedData['TimeChunk']['Channels'];
+			const numChannels = timeParsedData['TimeChunk']['NumChannels'];
+			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+				TimeDatasets[channelIndex] = newData[channelIndex];
+			}
+
+			updateItemInMap(timeParsedData['TimeChunk']['SourceIdentifier'], {
+				timeSampleRate: timeParsedData['TimeChunk']['SampleRate'],
+				timeChunkSize: timeParsedData['TimeChunk']['ChunkSize'],
+				sourceIdentifier: timeParsedData['TimeChunk']['SourceIdentifier'],
+				TimeDomainYValues: TimeDatasets,
+				timeID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-time',
+				freqID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-freq'
 			});
+		});
+	}
 
-			TimeWebSocket.addEventListener('close', (event) => {
-				console.log('TimeChunk WebSocket closed', event);
-
-			});
-
-			TimeWebSocket.addEventListener('error', (error) => {
-				console.log('WebSocket error', error);
-				TimeWebSocket.close();
-				setTimeout(ConnectTimeWebSocket, 1000);
-			});
-
-			let timeParsedData = null;
-			let TimeDatasets = [];
-
-			TimeWebSocket.addEventListener('message', async (event) => {
-				timeParsedData = JSON.parse(event.data);
-				// If a plot is not active do not process its data to save time
-				if (!IsPlotActive(timeParsedData['TimeChunk']['SourceIdentifier'])) {
-					return;
-				}
-				// Convert data to array
-				const newData = timeParsedData['TimeChunk']['Channels'];
-				const numChannels = timeParsedData['TimeChunk']['NumChannels'];
-				for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-					TimeDatasets[channelIndex] = newData[channelIndex];
-				}
-
-				updateItemInMap(timeParsedData['TimeChunk']['SourceIdentifier'], {
-					timeSampleRate: timeParsedData['TimeChunk']['SampleRate'],
-					timeChunkSize: timeParsedData['TimeChunk']['ChunkSize'],
-					sourceIdentifier: timeParsedData['TimeChunk']['SourceIdentifier'],
-					TimeDomainYValues: TimeDatasets,
-					timeID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-time',
-					freqID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-freq'
-				});
-			});
-		};
-	
 	let FreqWebSocket = null;
 	function ConnectFreqWebSocket() {
-			FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
+		FreqWebSocket = new WebSocket('ws://localhost:10100/DataTypes/FFTMagnitudeChunk');
 
-			FreqWebSocket.addEventListener('open', () => {
-				console.log('FFTMagnitudeChunk WebSocket connected');
+		FreqWebSocket.addEventListener('open', () => {
+			console.log('FFTMagnitudeChunk WebSocket connected');
+		});
 
+		FreqWebSocket.addEventListener('close', (event) => {
+			console.log('WebSocket closed', event);
+			setTimeout(ConnectFreqWebSocket, 5000); // Attempt to reconnect after 1 second
+		});
+
+		FreqWebSocket.addEventListener('error', (error) => {
+			console.log('WebSocket error', error);
+			FreqWebSocket.close();
+		});
+
+		let FreqParsedData = null;
+		let FreqDatasets = [];
+
+		FreqWebSocket.addEventListener('message', async (event) => {
+			FreqParsedData = JSON.parse(event.data);
+			// If a plot is not active do not process its data to save time
+			if (!IsPlotActive(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'])) {
+				return;
+			}
+
+			const newData = FreqParsedData['FFTMagnitudeChunk']['Channels'];
+			const numChannels = FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
+			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+				FreqDatasets[channelIndex] = newData[channelIndex];
+			}
+
+			updateItemInMap(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'], {
+				freqSampleRate: FreqParsedData['FFTMagnitudeChunk']['SampleRate'],
+				freqChunkSize: FreqParsedData['FFTMagnitudeChunk']['ChunkSize'],
+				sourceIdentifier: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'],
+				FreqDomainYValues: FreqDatasets,
+				freqID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-freq',
+				timeID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-time'
 			});
+		});
+	}
 
-			FreqWebSocket.addEventListener('close', (event) => {
-				console.log('WebSocket closed', event);
-				setTimeout(ConnectFreqWebSocket, 5000); // Attempt to reconnect after 1 second
-			});
-
-			FreqWebSocket.addEventListener('error', (error) => {
-				console.log('WebSocket error', error);
-				FreqWebSocket.close();
-			});
-
-			let FreqParsedData = null;
-			let FreqDatasets = [];
-
-			FreqWebSocket.addEventListener('message', async (event) => {
-				FreqParsedData = JSON.parse(event.data);
-				// If a plot is not active do not process its data to save time
-				if (!IsPlotActive(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'])) {
-					return;
-				}
-
-				const newData = FreqParsedData['FFTMagnitudeChunk']['Channels'];
-				const numChannels = FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
-				for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-					FreqDatasets[channelIndex] = newData[channelIndex];
-				}
-
-				updateItemInMap(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'], {
-					freqSampleRate: FreqParsedData['FFTMagnitudeChunk']['SampleRate'],
-					freqChunkSize: FreqParsedData['FFTMagnitudeChunk']['ChunkSize'],
-					sourceIdentifier: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'],
-					FreqDomainYValues: FreqDatasets,
-					freqID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-freq',
-					timeID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-time'
-				});
-			});
-		};
-	
-	
 	function closeWebSockets() {
 		if (TimeWebSocket) {
-			TimeWebSocket.close();	
+			TimeWebSocket.close();
 		}
 		if (FreqWebSocket) {
-			FreqWebSocket.close();	
+			FreqWebSocket.close();
 		}
 	}
 
-	onDestroy(() => {closeWebSockets()});
+	onDestroy(() => {
+		closeWebSockets();
+	});
 
 	onMount(() => {
 		ConnectTimeWebSocket(); // Initial connection
 		ConnectFreqWebSocket(); // Initial connection
 	});
-
 </script>
 
 <svelte:head>
