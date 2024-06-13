@@ -101,9 +101,9 @@
 				timeSampleRate: timeParsedData['TimeChunk']['SampleRate'],
 				timeChunkSize: timeParsedData['TimeChunk']['ChunkSize'],
 				sourceIdentifier: timeParsedData['TimeChunk']['SourceIdentifier'],
-				TimeDomainYValues: TimeDatasets,
-				timeID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-time',
-				freqID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-freq'
+				aanTimeYValues: TimeDatasets,
+				strTimeID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-time',
+				strFreqID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-freq'
 			});
 		});
 	}
@@ -146,9 +146,9 @@
 				freqSampleRate: FreqParsedData['FFTMagnitudeChunk']['SampleRate'],
 				freqChunkSize: FreqParsedData['FFTMagnitudeChunk']['ChunkSize'],
 				sourceIdentifier: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'],
-				FreqDomainYValues: FreqDatasets,
-				freqID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-freq',
-				timeID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-time'
+				aanFreqYValues: FreqDatasets,
+				strTimeID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-freq',
+				strFreqID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-time'
 			});
 		});
 	}

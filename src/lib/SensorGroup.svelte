@@ -1,6 +1,7 @@
 <script lang="ts" defer>
 	import { onMount } from 'svelte';
 	import { Badge } from '@svelteuidev/core';
+	import LineChart from '$lib/LineChart.svelte';
 	import { WebglPlot, WebglLine, ColorRGBA } from 'webgl-plot';
 
 	// Define the props expected by SensorGroup
@@ -11,16 +12,16 @@
 	export let sourceIdentifier = '-';
 
 	let TimeDomainChart;
-	export let TimeDomainYValues: number[][] = [];
-	export let timeID: string;
+	export let aanTimeYValues: number[][] = [];
+	export let strTimeID: string;
 
 	let FreqDomainChart;
-	export let FreqDomainYValues: number[][] = [];
+	export let aanFreqYValues: number[][] = [];
+	export let strFreqID: string;
 
-	$: TimeMounted = false;
-	$: FreqMounted = false;
+	$: bTimeMounted = false;
+	$: bFreqMounted = false;
 
-	export let freqID: string;
 
 	let timeColor;
 	let timeLines = [];
@@ -29,6 +30,7 @@
 	let freqColor;
 	let freqLines = [];
 	let freqWglp;
+
 	onMount(() => {
 		initTimeCanvas();
 		initFreqCanvas();
@@ -36,26 +38,26 @@
 
 	function initTimeCanvas() {
 		// Ensure HMTL is loaded in
-		if (!document.getElementById(timeID)) {
+		if (!document.getElementById(strTimeID)) {
 			return;
 		}
 		// Ensure we processed some data (therefore var set)
-		if (!TimeDomainYValues.length) {
+		if (!aanTimeYValues.length) {
 			return;
 		}
 		// Create the "class" wise context only once
 		if (!timeWglp) {
 			timeWglp = new WebglPlot(TimeDomainChart);
-			TimeMounted = true;
+			bTimeMounted = true;
 
-			TimeDomainChart = document.getElementById(timeID);
+			TimeDomainChart = document.getElementById(strTimeID);
 			const devicePixelRatio = window.devicePixelRatio || 2;
 			TimeDomainChart.width = TimeDomainChart.clientWidth * devicePixelRatio;
 			TimeDomainChart.height = TimeDomainChart.clientHeight * devicePixelRatio;
 		}
 
 		// Iterate and add all channels to add lines
-		for (let i = 0; i < TimeDomainYValues.length; i++) {
+		for (let i = 0; i < aanTimeYValues.length; i++) {
 			timeColor = new ColorRGBA(Math.random(), Math.random(), Math.random(), 1);
 			let line = new WebglLine(timeColor, timeChunkSize);
 			line.arrangeX();
@@ -66,17 +68,17 @@
 
 	function initFreqCanvas() {
 		// Ensure HMTL is loaded in
-		if (!document.getElementById(timeID)) {
+		if (!document.getElementById(strTimeID)) {
 			return;
 		}
 		// Ensure we processed some data (therefore var set)
-		if (!FreqDomainYValues.length) {
+		if (!aanFreqYValues.length) {
 			return;
 		}
 		// Create the "class" wise context only once
 		if (!freqWglp) {
 			freqWglp = new WebglPlot(FreqDomainChart);
-			FreqMounted = true;
+			bFreqMounted = true;
 
 			FreqDomainChart = document.getElementById(freqID);
 			const devicePixelRatio = window.devicePixelRatio || 2;
@@ -85,7 +87,7 @@
 		}
 
 		// Iterate and add all channels to lines
-		for (let i = 0; i < FreqDomainYValues.length; i++) {
+		for (let i = 0; i < aanFreqYValues.length; i++) {
 			freqColor = new ColorRGBA(Math.random(), Math.random(), Math.random(), 1);
 			let line = new WebglLine(freqColor, freqChunkSize);
 			line.arrangeX();
@@ -95,10 +97,10 @@
 	}
 
 	$: {
-		if (TimeMounted) {
-			for (let i = 0; i < TimeDomainYValues.length; i++) {
+		if (bTimeMounted) {
+			for (let i = 0; i < aanTimeYValues.length; i++) {
 				for (let j = 0; j < timeChunkSize; j++) {
-					timeLines[i].setY(j, TimeDomainYValues[i][j] / 32768);
+					timeLines[i].setY(j, aanTimeYValues[i][j] / 32768);
 				}
 			}
 			timeWglp.update();
@@ -106,10 +108,10 @@
 			initTimeCanvas();
 		}
 
-		if (FreqMounted) {
-			for (let i = 0; i < FreqDomainYValues.length; i++) {
+		if (bFreqMounted) {
+			for (let i = 0; i < aanFreqYValues.length; i++) {
 				for (let j = 0; j < timeChunkSize; j++) {
-					freqLines[i].setY(j, FreqDomainYValues[i][j] / 32768 / 512);
+					freqLines[i].setY(j, aanFreqYValues[i][j] / 32768 / 512);
 				}
 			}
 			freqWglp.update();
@@ -129,7 +131,7 @@
 			</div>
 			<div>
 				<!-- <canvas style="width: 100%;" id="my_canvas" /> -->
-				<canvas class="canvas" id={timeID} bind:this={TimeDomainChart} />
+				<canvas class="canvas" id={strTimeID} bind:this={TimeDomainChart} />
 			</div>
 		</div>
 		<div class="graphGroup">
@@ -138,7 +140,7 @@
 				<Badge color="gray">Chunk Size: {freqChunkSize}</Badge>
 			</div>
 			<div>
-				<canvas class="canvas" id={freqID} bind:this={FreqDomainChart} />
+				<canvas class="canvas" id={strFreqID} bind:this={FreqDomainChart} />
 			</div>
 		</div>
 	</div>
