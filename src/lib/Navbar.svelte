@@ -3,14 +3,13 @@
 </script>
 
 <div>
-<section>
-	<nav>
-		<a href="/">Home</a>
-		<a href="/map">Map</a>
-	
-	</nav>
-	<StatusText/>
-</section>
+	<section>
+		<nav>
+			<a href="/">Home</a>
+			<a href="/map">Map</a>
+		</nav>
+		<StatusText />
+	</section>
 </div>
 
 <style>
