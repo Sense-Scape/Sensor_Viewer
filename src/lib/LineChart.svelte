@@ -47,6 +47,20 @@
 		bInitialised = true
 	}
 	
+	function normalize(arr) {
+		// Find the minimum and maximum values
+		const min = Math.min(...arr);
+		const max = Math.max(...arr);
+
+		// Calculate the scaling factor
+		const range = max - min;
+
+		return arr.map(value => {
+			// Scale each element to the new range
+			return (value - min) / range;
+		});
+	}
+
 	$: {
 		if(!bInitialised)
 		{
@@ -57,7 +71,8 @@
 		{
 			for (let i = 0; i < aanYValues.length; i++) {
 				for (let j = 0; j < aanYValues[i].length; j++) {
-					ChartLines[i].setY(j, aanYValues[i][j] / (10*32768));
+					let tmp = normalize(aanYValues[i])
+					ChartLines[i].setY(j, tmp[j]);
 				}
 			}
 
