@@ -2,21 +2,19 @@
 	import { onMount } from 'svelte';
 	import { WebglPlot, WebglLine, ColorRGBA } from 'webgl-plot'
 
-	let Chart;
-    $: bChartMounted = false;
+	let bInitialised = false
 
 	export let aanYValues: number[][] = [];
 	export let strChartID: string;
 
+	let Chart;
 	let ChartColor;
-	let ChartLines = [];
+	let ChartLines = undefined;
 	let WebGLPlot;
-	
-	onMount(() => {
-		initCanvas();
-	});
+	let LineColor
 
-	function initTimeCanvas() {
+
+	function InitCanvas() {
 
 		// Ensure HMTL is loaded in
 		if (!document.getElementById(strChartID)) {
@@ -30,31 +28,43 @@
 
 		// Create the "class" wise context only once
 		if (!WebGLPlot) {
+			ChartLines = []
+			Chart = document.getElementById(strChartID);
 			WebGLPlot = new WebglPlot(Chart);
-			bChartMounted = true;
-			// Now lets set up the display area
-			Chart = document.getElementById(strTimeID);
-			const devicePixelRatio = window.devicePixelRatio || 2;
-			Chart.width = Chart.clientWidth * devicePixelRatio;
-			Chart.height = Chart.clientHeight * devicePixelRatio;
 		}
 
 		// Iterate and add all channels to add lines
 		for (let i = 0; i < aanYValues.length; i++) {
 			// Generate the new line of data to add to the plot
-			timeColor = new ColorRGBA(Math.random(), Math.random(), Math.random(), 1);
-			let line = new WebglLine(timeColor, timeChunkSize);
+			LineColor = new ColorRGBA(Math.random(), Math.random(), Math.random(), 1);
+			let line = new WebglLine(LineColor, aanYValues[i].length);
 			line.arrangeX();
 			// Add it to the plot
 			WebGLPlot.addLine(line);
 			ChartLines.push(line);
 		}
+
+		bInitialised = true
 	}
 	
+	$: {
+		if(!bInitialised)
+		{
+			InitCanvas();
+		}
+
+		if(WebGLPlot && ChartLines)
+		{
+			for (let i = 0; i < aanYValues.length; i++) {
+				for (let j = 0; j < aanYValues[i].length; j++) {
+					ChartLines[i].setY(j, aanYValues[i][j] / (10*32768));
+				}
+			}
+
+			WebGLPlot.update();
+		}
+	}
 </script>
 
 <canvas class="canvas" id={strChartID} bind:this={Chart} />
 
-
-<style>
-</style>

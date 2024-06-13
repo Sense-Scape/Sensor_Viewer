@@ -147,8 +147,8 @@
 				freqChunkSize: FreqParsedData['FFTMagnitudeChunk']['ChunkSize'],
 				sourceIdentifier: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'],
 				aanFreqYValues: FreqDatasets,
-				strTimeID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-freq',
-				strFreqID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-time'
+				strTimeID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-time',
+				strFreqID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-freq'
 			});
 		});
 	}
