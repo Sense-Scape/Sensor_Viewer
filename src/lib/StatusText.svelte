@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { Accordion } from '@svelteuidev/core';
 
 	var mapData = [];
 	$: Text = '';
