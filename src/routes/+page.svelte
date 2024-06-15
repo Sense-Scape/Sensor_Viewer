@@ -25,6 +25,7 @@
 		// Process in the case we have never seen this identifier before
 		return true;
 	}
+
 	function updateItemInMap(ChunkSourceIdentifier, ChunkData) {
 		// Start by checking if we have seen this source identifier before
 		let index = -1;
@@ -85,14 +86,15 @@
 		let TimeDatasets = [];
 
 		TimeWebSocket.addEventListener('message', async (event) => {
+			//console.log(endTime - startTime)
 			timeParsedData = JSON.parse(event.data);
 			// If a plot is not active do not process its data to save time
 			if (!IsPlotActive(timeParsedData['TimeChunk']['SourceIdentifier'])) {
 				return;
 			}
 			// Convert data to array
-			const newData = timeParsedData['TimeChunk']['Channels'];
-			const numChannels = timeParsedData['TimeChunk']['NumChannels'];
+			let newData = timeParsedData['TimeChunk']['Channels'];
+			let numChannels = timeParsedData['TimeChunk']['NumChannels'];
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 				TimeDatasets[channelIndex] = newData[channelIndex];
 			}
@@ -101,9 +103,7 @@
 				timeSampleRate: timeParsedData['TimeChunk']['SampleRate'],
 				timeChunkSize: timeParsedData['TimeChunk']['ChunkSize'],
 				sourceIdentifier: timeParsedData['TimeChunk']['SourceIdentifier'],
-				TimeDomainYValues: TimeDatasets,
-				timeID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-time',
-				freqID: JSON.stringify(timeParsedData['TimeChunk']['SourceIdentifier']) + '-freq'
+				aanTimeYValues: TimeDatasets
 			});
 		});
 	}
@@ -136,8 +136,8 @@
 				return;
 			}
 
-			const newData = FreqParsedData['FFTMagnitudeChunk']['Channels'];
-			const numChannels = FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
+			let newData = FreqParsedData['FFTMagnitudeChunk']['Channels'];
+			let numChannels = FreqParsedData['FFTMagnitudeChunk']['NumChannels'];
 			for (let channelIndex = 0; channelIndex < numChannels; channelIndex++) {
 				FreqDatasets[channelIndex] = newData[channelIndex];
 			}
@@ -146,9 +146,7 @@
 				freqSampleRate: FreqParsedData['FFTMagnitudeChunk']['SampleRate'],
 				freqChunkSize: FreqParsedData['FFTMagnitudeChunk']['ChunkSize'],
 				sourceIdentifier: FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier'],
-				FreqDomainYValues: FreqDatasets,
-				freqID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-freq',
-				timeID: JSON.stringify(FreqParsedData['FFTMagnitudeChunk']['SourceIdentifier']) + '-time'
+				aanFreqYValues: FreqDatasets
 			});
 		});
 	}
