@@ -6,12 +6,13 @@
 
 	export let aanYValues: number[][] = [];
 	export let strChartID: string;
+	export let YScale: number = 1
 
-	let Chart;
-	let ChartColor;
+	let Chart = undefined;
+	let ChartColor = undefined;
 	let ChartLines = undefined;
-	let WebGLPlot;
-	let LineColor
+	let WebGLPlot = undefined;
+	let LineColor = undefined;
 
 
 	function InitCanvas() {
@@ -31,6 +32,7 @@
 			ChartLines = []
 			Chart = document.getElementById(strChartID);
 			WebGLPlot = new WebglPlot(Chart);
+			WebGLPlot.gScaleY = YScale
 		}
 
 		// Iterate and add all channels to add lines
@@ -46,20 +48,6 @@
 
 		bInitialised = true
 	}
-	
-	function normalize(arr) {
-		// Find the minimum and maximum values
-		const min = Math.min(...arr);
-		const max = Math.max(...arr);
-
-		// Calculate the scaling factor
-		const range = max - min;
-
-		return arr.map(value => {
-			// Scale each element to the new range
-			return (value - min) / range;
-		});
-	}
 
 	$: {
 		if(!bInitialised)
@@ -71,11 +59,9 @@
 		{
 			for (let i = 0; i < aanYValues.length; i++) {
 				for (let j = 0; j < aanYValues[i].length; j++) {
-					let tmp = normalize(aanYValues[i])
-					ChartLines[i].setY(j, tmp[j]);
+					ChartLines[i].setY(j, aanYValues[i][j]);
 				}
 			}
-
 			WebGLPlot.update();
 		}
 	}
