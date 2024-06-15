@@ -1,12 +1,12 @@
 <script lang="ts" defer>
 	import { onMount } from 'svelte';
-	import { WebglPlot, WebglLine, ColorRGBA } from 'webgl-plot'
+	import { WebglPlot, WebglLine, ColorRGBA } from 'webgl-plot';
 
-	let bInitialised = false
+	let bInitialised = false;
 
 	export let aanYValues: number[][] = [];
 	export let strChartID: string;
-	export let YScale: number = 1
+	export let YScale: number = 1;
 
 	let Chart = undefined;
 	let ChartColor = undefined;
@@ -14,9 +14,7 @@
 	let WebGLPlot = undefined;
 	let LineColor = undefined;
 
-
 	function InitCanvas() {
-
 		// Ensure HMTL is loaded in
 		if (!document.getElementById(strChartID)) {
 			return;
@@ -29,10 +27,10 @@
 
 		// Create the "class" wise context only once
 		if (!WebGLPlot) {
-			ChartLines = []
+			ChartLines = [];
 			Chart = document.getElementById(strChartID);
 			WebGLPlot = new WebglPlot(Chart);
-			WebGLPlot.gScaleY = YScale
+			WebGLPlot.gScaleY = YScale;
 		}
 
 		// Iterate and add all channels to add lines
@@ -46,17 +44,15 @@
 			ChartLines.push(line);
 		}
 
-		bInitialised = true
+		bInitialised = true;
 	}
 
 	$: {
-		if(!bInitialised)
-		{
+		if (!bInitialised) {
 			InitCanvas();
 		}
 
-		if(WebGLPlot && ChartLines)
-		{
+		if (WebGLPlot && ChartLines) {
 			for (let i = 0; i < aanYValues.length; i++) {
 				for (let j = 0; j < aanYValues[i].length; j++) {
 					ChartLines[i].setY(j, aanYValues[i][j]);
@@ -68,4 +64,3 @@
 </script>
 
 <canvas class="canvas" id={strChartID} bind:this={Chart} />
-

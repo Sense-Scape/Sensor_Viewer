@@ -12,7 +12,6 @@
 
 	export let aanTimeYValues: number[][] = [];
 	export let aanFreqYValues: number[][] = [];
-
 </script>
 
 <div class-="sensorGroup">
@@ -24,7 +23,11 @@
 				<Badge color="gray">Chunk Size: {timeChunkSize}</Badge>
 			</div>
 			<div class="canvas">
-				<LineChart strChartID={sourceIdentifier + "-time"} aanYValues={aanTimeYValues} YScale={0.000025}/>
+				<LineChart
+					strChartID={sourceIdentifier + '-time'}
+					aanYValues={aanTimeYValues}
+					YScale={0.000025}
+				/>
 			</div>
 		</div>
 		<div class="graphGroup">
@@ -33,7 +36,11 @@
 				<Badge color="gray">Chunk Size: {freqChunkSize}</Badge>
 			</div>
 			<div class="canvas">
-				<LineChart strChartID={sourceIdentifier + "-freq"} aanYValues={aanFreqYValues} YScale={0.0000001}/>
+				<LineChart
+					strChartID={sourceIdentifier + '-freq'}
+					aanYValues={aanFreqYValues}
+					YScale={0.0000001}
+				/>
 			</div>
 		</div>
 	</div>
@@ -53,7 +60,7 @@
 		padding: 10px;
 	}
 	.canvas {
-		height:5%;
+		height: 5%;
 		width: 100%;
 	}
 
@@ -61,6 +68,6 @@
 		display: flex;
 		flex-direction: row;
 		width: 100%;
-		height:20%;
+		height: 20%;
 	}
 </style>

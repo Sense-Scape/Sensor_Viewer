@@ -3,7 +3,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { Button, Badge, Stack } from '@svelteuidev/core';
 
-	let startTime = new Date()
+	let startTime = new Date();
 
 	// Create a writable store initialized as an empty object (to mimic a map)
 	var mapData = [];
@@ -88,7 +88,6 @@
 		let TimeDatasets = [];
 
 		TimeWebSocket.addEventListener('message', async (event) => {
-
 			//console.log(endTime - startTime)
 			timeParsedData = JSON.parse(event.data);
 			// If a plot is not active do not process its data to save time
