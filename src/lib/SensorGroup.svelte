@@ -1,7 +1,6 @@
 <script lang="ts" defer>
 	import { Badge } from '@svelteuidev/core';
 	import LineChart from '$lib/LineChart.svelte';
-	import { WebglPlot, WebglLine, ColorRGBA } from 'webgl-plot';
 
 	// Define the props expected by SensorGroup
 	export let timeSampleRate = -1;

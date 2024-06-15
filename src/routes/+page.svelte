@@ -2,9 +2,7 @@
 	import SensorGroup from '$lib/SensorGroup.svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import { Button, Badge, Stack } from '@svelteuidev/core';
-
-	let startTime = new Date();
-
+	
 	// Create a writable store initialized as an empty object (to mimic a map)
 	var mapData = [];
 

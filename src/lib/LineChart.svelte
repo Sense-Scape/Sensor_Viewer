@@ -1,5 +1,4 @@
 <script lang="ts" defer>
-	import { onMount } from 'svelte';
 	import { WebglPlot, WebglLine, ColorRGBA } from 'webgl-plot';
 
 	let bInitialised = false;
@@ -9,7 +8,6 @@
 	export let YScale: number = 1;
 
 	let Chart = undefined;
-	let ChartColor = undefined;
 	let ChartLines = undefined;
 	let WebGLPlot = undefined;
 	let LineColor = undefined;
