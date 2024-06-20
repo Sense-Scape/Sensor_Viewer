@@ -38,7 +38,7 @@
 				<LineChart
 					strChartID={sourceIdentifier + '-freq'}
 					aanYValues={aanFreqYValues}
-					YScale={0.0000001}
+					YScale={0.000025}
 				/>
 			</div>
 		</div>
