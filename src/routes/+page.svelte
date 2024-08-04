@@ -85,7 +85,7 @@
 		let timeParsedData = null;
 		let TimeDatasets = [];
 
-		TimeWebSocket.addEventListener('message', async (event) => {
+		TimeWebSocket.addEventListener('message', async (event) => { 
 			//console.log(endTime - startTime)
 			timeParsedData = JSON.parse(event.data);
 			// If a plot is not active do not process its data to save time
@@ -118,12 +118,12 @@
 
 		FreqWebSocket.addEventListener('close', (event) => {
 			console.log('WebSocket closed', event);
-			setTimeout(ConnectFreqWebSocket, 5000); // Attempt to reconnect after 1 second
 		});
 
 		FreqWebSocket.addEventListener('error', (error) => {
 			console.log('WebSocket error', error);
 			FreqWebSocket.close();
+			setTimeout(ConnectFreqWebSocket, 1000); // Attempt to reconnect after 1 second
 		});
 
 		let FreqParsedData = null;
@@ -151,11 +151,47 @@
 		});
 	}
 
+	let DirectionChunkSocket = null;
+	function ConnectDirectionChunkSocket() {
+		DirectionChunkSocket = new WebSocket('ws://localhost:10100/DataTypes/DirectionBinChunk');
+
+		DirectionChunkSocket.addEventListener('open', () => {
+			console.log('DirectionChunkSocket WebSocket connected');
+		});
+
+		DirectionChunkSocket.addEventListener('close', (event) => {
+			console.log('WebSocket closed', event);
+		});
+
+		DirectionChunkSocket.addEventListener('error', (error) => {
+			console.log('WebSocket error', error);
+			DirectionChunkSocket.close();
+		});
+
+		let PolarParsedData = null;
+
+		DirectionChunkSocket.addEventListener('message', async (event) => {
+			PolarParsedData = JSON.parse(event.data);
+			//If a plot is not active do not process its data to save time
+			if (!IsPlotActive(PolarParsedData['DirectionBinChunk']['SourceIdentifier'])) {
+				return;
+			}
+
+			updateItemInMap(PolarParsedData['DirectionBinChunk']['SourceIdentifier'], {
+				anAngles_deg: PolarParsedData['DirectionBinChunk']['DetectionAngles_deg'],
+				sourceIdentifier: PolarParsedData['DirectionBinChunk']['SourceIdentifier']
+			});
+		});
+	}
+
 	function closeWebSockets() {
 		if (TimeWebSocket) {
 			TimeWebSocket.close();
 		}
 		if (FreqWebSocket) {
+			FreqWebSocket.close();
+		}
+		if (DirectionChunkSocket) {
 			FreqWebSocket.close();
 		}
 	}
@@ -167,6 +203,7 @@
 	onMount(() => {
 		ConnectTimeWebSocket(); // Initial connection
 		ConnectFreqWebSocket(); // Initial connection
+		ConnectDirectionChunkSocket();
 	});
 </script>
 
@@ -197,7 +234,7 @@
 	<div class="container">
 		<div class="spacer">
 			<Stack align="center" spacing="xs">
-				<Badge color="gray" size="xl" radius="lg">Device ID</Badge>
+				<Badge color="gray" size="xl" radius="lg">Active Sensors</Badge>
 				{#each mapData as data, i}
 					<div class="Button">
 						<Button

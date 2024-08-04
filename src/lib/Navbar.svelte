@@ -8,7 +8,7 @@
 			<a href="/">Home</a>
 			<a href="/map">Map</a>
 		</nav>
-		<StatusText />
+		
 	</section>
 </div>
 

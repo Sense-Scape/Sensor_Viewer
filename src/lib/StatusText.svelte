@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
+	import { Button, Badge, Stack } from '@svelteuidev/core';
 
 	var mapData = [];
 	$: Text = '';
@@ -106,5 +107,11 @@
 </script>
 
 <div>
-	{Text}
+	<Badge radius="md" size="xl" color="gray">Processing Queue Stats</Badge>
+	{#each mapData as value}
+		<!-- {#if data.display} -->
+		<Badge color="gray">{JSON.stringify(value.value.SystemInfo)}</Badge>
+		<!-- {/if} -->
+	{/each}
 </div>
+
