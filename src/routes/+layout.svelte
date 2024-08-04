@@ -41,7 +41,7 @@
 
 <main>
 	<Navbar />
-	
+
 	<!-- +page.svelte is rendered in this <slot> -->
 	<div class="left">
 		<slot />
@@ -63,5 +63,4 @@
 		width: 20%;
 		height: 100%;
 	}
-
 </style>

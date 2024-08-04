@@ -85,7 +85,7 @@
 		let timeParsedData = null;
 		let TimeDatasets = [];
 
-		TimeWebSocket.addEventListener('message', async (event) => { 
+		TimeWebSocket.addEventListener('message', async (event) => {
 			//console.log(endTime - startTime)
 			timeParsedData = JSON.parse(event.data);
 			// If a plot is not active do not process its data to save time

@@ -1,5 +1,5 @@
 <script>
-	import { WebglPlot, WebglPolar , ColorRGBA } from 'webgl-plot';
+	import { WebglPlot, WebglPolar, ColorRGBA } from 'webgl-plot';
 
 	let bInitialised = false;
 
@@ -35,26 +35,21 @@
 			InitCanvas();
 		}
 
-        if (WebGLPlot && ChartLines) {
-            
-            WebGLPlot.removeDataLines()
-            
-            for (let i = 0; i < anAngles_deg.length; i++) {
+		if (WebGLPlot && ChartLines) {
+			WebGLPlot.removeDataLines();
 
-                LineColor = new ColorRGBA(0, 0, 0, 1);
-                let line = new WebglPolar(LineColor, 10);
+			for (let i = 0; i < anAngles_deg.length; i++) {
+				LineColor = new ColorRGBA(0, 0, 0, 1);
+				let line = new WebglPolar(LineColor, 10);
 
-                line.setRtheta(0, 0, 0);
-                line.setRtheta(1, anAngles_deg[i], 10)
-    
-                WebGLPlot.addLine(line);
-            }
-            WebGLPlot.update();
-        }
-    }
+				line.setRtheta(0, 0, 0);
+				line.setRtheta(1, anAngles_deg[i], 10);
 
-    
+				WebGLPlot.addLine(line);
+			}
+			WebGLPlot.update();
+		}
+	}
+</script>
 
-  </script>
-  
-  <canvas class="canvas" id={strChartID} bind:this={Chart} />
+<canvas class="canvas" id={strChartID} bind:this={Chart} />
