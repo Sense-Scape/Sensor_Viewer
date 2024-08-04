@@ -1,7 +1,3 @@
-<script lang="ts">
-	import StatusText from '$lib/StatusText.svelte';
-</script>
-
 <div>
 	<section>
 		<nav>

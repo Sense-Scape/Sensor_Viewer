@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { Button, Badge, Stack } from '@svelteuidev/core';
-
+	
 	var mapData = [];
 	$: Text = '';
 
