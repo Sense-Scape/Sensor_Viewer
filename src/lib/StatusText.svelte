@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
+	import { Badge } from '@svelteuidev/core';
 
 	var mapData = [];
-	$: Text = '';
 
 	/**
 	 * Function to find the index of a given sourceIdentifier in the mapData array.
@@ -54,8 +54,6 @@
 		for (let i = 0; i < mapData.length; i++) {
 			tmp = tmp + '\n' + JSON.stringify(mapData[i].value.SystemInfo);
 		}
-
-		Text = tmp;
 	}
 
 	function updateItemInMap(StatusParsedData) {
@@ -106,5 +104,10 @@
 </script>
 
 <div>
-	{Text}
+	<Badge radius="md" size="xl" color="gray">Processing Queue Stats</Badge>
+	{#each mapData as value}
+		<!-- {#if data.display} -->
+		<Badge color="gray">{JSON.stringify(value.value.SystemInfo)}</Badge>
+		<!-- {/if} -->
+	{/each}
 </div>

@@ -1,14 +1,9 @@
-<script lang="ts">
-	import StatusText from '$lib/StatusText.svelte';
-</script>
-
 <div>
 	<section>
 		<nav>
 			<a href="/">Home</a>
 			<a href="/map">Map</a>
 		</nav>
-		<StatusText />
 	</section>
 </div>
 

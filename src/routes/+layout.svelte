@@ -1,6 +1,7 @@
 <script>
 	import { dev, browser } from '$app/environment';
 	import { inject } from '@vercel/analytics';
+	import StatusText from '$lib/StatusText.svelte';
 
 	// util
 	import { webVitals } from '$lib/vitals';
@@ -40,6 +41,26 @@
 
 <main>
 	<Navbar />
+
 	<!-- +page.svelte is rendered in this <slot> -->
-	<slot />
+	<div class="left">
+		<slot />
+	</div>
+	<div class="right">
+		<StatusText />
+	</div>
 </main>
+
+<style>
+	.left {
+		flex-direction: row;
+		width: 80%;
+		height: 100%;
+	}
+
+	.right {
+		flex-direction: row;
+		width: 20%;
+		height: 100%;
+	}
+</style>
